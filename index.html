@@ -419,7 +419,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
           <input type="file" id="fotoInput" accept="image/*" onchange="onFotoSelected(event)"/>
           <div id="fzEmpty" class="fz-empty">
             <div class="fz-ico">📷</div>
-            <div class="fz-txt"><span class="fz-title">Foto de la persona *</span><span class="fz-sub">Clic aquí o arrastra la imagen</span></div>
+            <div class="fz-txt"><span class="fz-title">Foto de la persona *</span><span class="fz-sub">Clic o arrastra · se sube al registrar</span></div>
           </div>
           <div id="fzLoaded" class="fz-loaded hidden">
             <img id="fzPrev" class="fz-prev" src="" alt=""/>
@@ -515,7 +515,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 <script>
 const DEFAULT_API='https://script.google.com/macros/s/AKfycbyasO8Aie3eRUkCkR44Vy7A6DPvU7iD02pWyOATqtgLRmz4XtihFJV2nwPaLNeOFGsD/exec';
 let API_URL='', personas=[], personaActual=null, disenoActual='m1';
-let fotoBase64='', fotoUrlSubida='';
+let fotoBase64='', fotoUrlSubida='', fotoNombreArchivo='';
 const MESES=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 const DISENOS={
@@ -657,8 +657,10 @@ function setupDrag(){
 }
 function onFotoSelected(e){const f=e.target.files[0];if(f)procesarFoto(f);}
 
+// Al seleccionar: SOLO preview local, NO sube nada todavía
 function procesarFoto(file){
   fotoUrlSubida='';
+  fotoNombreArchivo=file.name;
   document.getElementById('fotoOk').classList.remove('show');
   document.getElementById('fotoErr').classList.remove('show');
   const reader=new FileReader();
@@ -667,10 +669,10 @@ function procesarFoto(file){
     document.getElementById('fzEmpty').classList.add('hidden');
     document.getElementById('fzLoaded').classList.remove('hidden');
     document.getElementById('fzPrev').src=dataUrl;
-    document.getElementById('fzName').textContent=file.name;
+    document.getElementById('fzName').textContent=file.name+' (lista para subir)';
     document.getElementById('fotoZone').classList.add('has-foto');
+    // Guardar el base64 en memoria — se subirá al dar Registrar
     fotoBase64=dataUrl.split(',')[1];
-    await subirFoto(file.name);
   };
   reader.readAsDataURL(file);
 }
@@ -687,54 +689,58 @@ function resizeImg(dataUrl,maxPx){
     img.src=dataUrl;
   });
 }
-async function subirFoto(originalName){
-  if(!API_URL){mostrarFotoErr('Conecta la API primero (⚙ arriba).');return;}
-  const up=document.getElementById('fzUploading');up.classList.remove('hidden');
-  const name=(originalName||'foto').replace(/\.[^.]+$/,'')+'_'+Date.now()+'.jpg';
-  const d=await callPOST({action:'uploadFoto',base64:fotoBase64,fileName:name,mimeType:'image/jpeg'});
-  up.classList.add('hidden');
-  if(d&&d.success){
-    fotoUrlSubida=d.fotoUrl;
-    document.getElementById('fotoOk').classList.add('show');
-  }else{
-    mostrarFotoErr((d&&d.mensaje)?d.mensaje:'No se pudo subir. Revisa que el GAS esté redesplegado.');
-  }
-}
 function mostrarFotoErr(txt){
   document.getElementById('fotoErrTxt').textContent=txt;
   document.getElementById('fotoErr').classList.add('show');
 }
 
-// ═══ REGISTRAR ═══
+// ═══ REGISTRAR — aquí es donde SÍ sube la foto y luego guarda en el Sheet ═══
 async function registrarPersona(){
   const btn=document.getElementById('btnReg'),msg=document.getElementById('regMsg');msg.className='msg';
+  document.getElementById('fotoErr').classList.remove('show');
   const v=id=>document.getElementById(id).value.trim();
   const doc=v('rDoc'),nombre=v('rNombre'),cargo=v('rCargo'),area=v('rArea'),dia=v('rDia'),mes=v('rMes'),ano=v('rAno'),genero=v('rGenero');
+
   if(!doc||!nombre||!cargo||!area||!dia||!mes||!ano){msg.className='msg err';msg.textContent='Completa todos los campos obligatorios.';return;}
-  if(!fotoBase64){msg.className='msg err';msg.textContent='Sube la foto de la persona.';return;}
+  if(!fotoBase64){msg.className='msg err';msg.textContent='Selecciona la foto de la persona.';return;}
   if(!API_URL){alert('Conecta primero la API (⚙ arriba).');return;}
 
   const SVG='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg> Registrar persona';
-  btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></span> Guardando…';
+  btn.disabled=true;
 
-  // Asegurar foto subida
-  if(!fotoUrlSubida){
-    await subirFoto('foto_'+doc);
-    if(!fotoUrlSubida){msg.className='msg err';msg.textContent='No se pudo subir la foto. Reintenta.';btn.disabled=false;btn.innerHTML=SVG;return;}
+  // ── PASO 1: Subir la foto al Drive ──
+  btn.innerHTML='<span style="display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></span> Subiendo foto…';
+  document.getElementById('fzUploading').classList.remove('hidden');
+
+  const nombreArchivo=(fotoNombreArchivo||'foto').replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]/g,'_')+'_'+doc+'.jpg';
+  const up=await callPOST({action:'uploadFoto',base64:fotoBase64,fileName:nombreArchivo,mimeType:'image/jpeg'});
+  document.getElementById('fzUploading').classList.add('hidden');
+
+  if(!up||!up.success){
+    mostrarFotoErr((up&&up.mensaje)?up.mensaje:'No se pudo subir la foto. Verifica el GAS.');
+    msg.className='msg err';msg.textContent='✗ Error al subir la foto. No se registró la persona.';
+    btn.disabled=false;btn.innerHTML=SVG;return;
   }
+  fotoUrlSubida=up.fotoUrl;
+  document.getElementById('fotoOk').classList.add('show');
 
+  // ── PASO 2: Guardar el registro en el Sheet con el link de la foto ──
+  btn.innerHTML='<span style="display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></span> Guardando…';
   const d=await callPOST({action:'agregarPersona',documento:doc,apellidosNombres:nombre,dia:+dia,mes:+mes,año:+ano,cargo,area,fotoUrl:fotoUrlSubida,genero});
+
   if(d&&d.success){
     msg.className='msg ok';msg.textContent='✓ '+d.mensaje;
     ['rDoc','rNombre','rCargo','rArea','rDia','rAno'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('rMes').value='';document.getElementById('rGenero').value='';
     resetFoto();
     await conectarAPI();switchTab('buscar');
-  }else{msg.className='msg err';msg.textContent='✗ '+((d&&d.mensaje)||'Error desconocido');}
+  }else{
+    msg.className='msg err';msg.textContent='✗ '+((d&&d.mensaje)||'Error al guardar');
+  }
   btn.disabled=false;btn.innerHTML=SVG;
 }
 function resetFoto(){
-  fotoBase64='';fotoUrlSubida='';
+  fotoBase64='';fotoUrlSubida='';fotoNombreArchivo='';
   document.getElementById('fzEmpty').classList.remove('hidden');
   document.getElementById('fzLoaded').classList.add('hidden');
   document.getElementById('fzPrev').src='';
