@@ -596,7 +596,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 
 <script>
 // ═══ CONFIG ═══
-const DEFAULT_API='https://script.google.com/macros/s/AKfycbzkpyi6KjjU8Jx9yovpwcjqYRQYZXH-cw5Pk6VbEtHWMUCGCq8ZRjQS_s2HhsW_HTSN1Q/exec';
+const DEFAULT_API='https://script.google.com/macros/s/AKfycbxEE9Rb0hbXhH37tnQC6p0754krsIqKVwiYiVuY6hEPLLTUdYivXRVnAmBUfMIsOMHVIQ/exec';
 let API_URL='', personas=[], personaActual=null, disenoActual='m1';
 let fotoBase64='', fotoMime='', fotoFileName='', fotoUrlSubida='';
 
@@ -766,13 +766,12 @@ function onFotoSelected(e){
 }
 
 function procesarFoto(file){
-  fotoFileName=file.name; fotoMime=file.type; fotoUrlSubida='';
+  fotoFileName=file.name; fotoMime='image/jpeg'; fotoUrlSubida='';
   const reader=new FileReader();
   reader.onload=async(ev)=>{
-    const dataUrl=ev.target.result;
+    // Redimensionar a máximo 800px para no superar el límite de POST del GAS
+    const dataUrl=await resizeImagen(ev.target.result, 800);
     // Mostrar preview
-    const preview=document.getElementById('fotoPreview');
-    preview.src=dataUrl;
     document.getElementById('fotoEmpty').classList.add('hidden');
     document.getElementById('fotoLoaded').classList.remove('hidden');
     document.getElementById('fotoPreview').src=dataUrl;
@@ -780,11 +779,30 @@ function procesarFoto(file){
     document.getElementById('fotoZone').classList.add('has-foto');
     document.getElementById('fotoOk').classList.remove('show');
     document.getElementById('fotoOk').style.display='none';
-
+    // Guardar solo el base64 sin el prefijo
     fotoBase64=dataUrl.split(',')[1];
     await subirFotoADrive();
   };
   reader.readAsDataURL(file);
+}
+
+// Redimensiona a maxPx en el lado más largo y convierte a JPEG
+function resizeImagen(dataUrl, maxPx){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      let w=img.width, h=img.height;
+      if(w>maxPx||h>maxPx){
+        if(w>=h){h=Math.round(h*maxPx/w);w=maxPx;}
+        else{w=Math.round(w*maxPx/h);h=maxPx;}
+      }
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg',0.88));
+    };
+    img.src=dataUrl;
+  });
 }
 
 async function subirFotoADrive(){
@@ -792,16 +810,26 @@ async function subirFotoADrive(){
   const uploading=document.getElementById('fotoUploading');
   uploading.classList.remove('hidden');
   try{
-    const d=await postAPI({action:'uploadFoto',base64:fotoBase64,fileName:fotoFileName,mimeType:fotoMime});
+    const d=await postAPI({
+      action:'uploadFoto',
+      base64:fotoBase64,
+      fileName:fotoFileName.replace(/\.[^.]+$/,'')+'.jpg',
+      mimeType:'image/jpeg'
+    });
     uploading.classList.add('hidden');
     if(d&&d.success){
       fotoUrlSubida=d.fotoUrl;
       const ok=document.getElementById('fotoOk');
-      ok.style.display='flex';ok.classList.add('show');
+      ok.style.display='flex'; ok.classList.add('show');
+    } else {
+      console.error('Upload error GAS:',d?.mensaje);
+      // Mostrar error visible al usuario
+      document.getElementById('fotoFileName').textContent='⚠ Error al subir: '+(d?.mensaje||'Inténtalo de nuevo');
     }
   }catch(e){
     uploading.classList.add('hidden');
     console.error('Upload error:',e);
+    document.getElementById('fotoFileName').textContent='⚠ Error de conexión al subir foto';
   }
 }
 
