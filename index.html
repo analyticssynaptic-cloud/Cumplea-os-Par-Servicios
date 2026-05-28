@@ -513,7 +513,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 </div>
 
 <script>
-const DEFAULT_API='https://script.google.com/macros/s/AKfycbyasO8Aie3eRUkCkR44Vy7A6DPvU7iD02pWyOATqtgLRmz4XtihFJV2nwPaLNeOFGsD/exec';
+const DEFAULT_API='https://script.google.com/macros/s/AKfycbxPI5RmfnCcYESXA6qOIjMvZ9b9m12BoRMG2OplEY95VDzpiloAqB2oeOiOm9UHwch9yA/exec';
 let API_URL='', personas=[], personaActual=null, disenoActual='m1';
 let fotoBase64='', fotoUrlSubida='', fotoNombreArchivo='';
 const MESES=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -564,20 +564,55 @@ window.onload=()=>{
 
 function toggleApiConfig(){document.getElementById('apiCollapse').classList.toggle('open');}
 
-// ═══ API (POST con text/plain → sin preflight CORS) ═══
+// ═══ API ═══
+// GAS responde POST con redirect 302 que pierde el body.
+// Solución: mandamos TODO por GET con los datos en la URL (el redirect conserva la query).
+// Para la foto (base64 grande) usamos POST con body text/plain que GAS sí lee de e.postData.
 async function callGET(params){
   if(!API_URL)return null;
-  try{const r=await fetch(API_URL+'?'+new URLSearchParams(params),{redirect:'follow'});return await r.json();}
-  catch(e){console.error('GET',e);return null;}
+  try{
+    const r=await fetch(API_URL+'?'+new URLSearchParams(params),{method:'GET',redirect:'follow'});
+    return await r.json();
+  }catch(e){console.error('GET',e);return {success:false,mensaje:'Error de red: '+e.message};}
 }
 async function callPOST(body){
   if(!API_URL)return null;
   try{
-    const r=await fetch(API_URL,{method:'POST',
+    // text/plain evita el preflight CORS; GAS lee el JSON desde e.postData.contents
+    const r=await fetch(API_URL,{
+      method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify(body),redirect:'follow'});
+      body:JSON.stringify(body),
+      redirect:'follow'
+    });
     return await r.json();
   }catch(e){console.error('POST',e);return {success:false,mensaje:'Error de red: '+e.message};}
+}
+// Registro de persona por GET (datos cortos, viaja en la URL — el redirect 302 los conserva)
+async function registrarPorGet(d){
+  const params={
+    action:'agregarPersona',
+    documento:d.documento, apellidosNombres:d.apellidosNombres,
+    dia:d.dia, mes:d.mes, año:d.año, cargo:d.cargo, area:d.area,
+    fotoUrl:d.fotoUrl, genero:d.genero
+  };
+  return await callGET(params);
+}
+// Sube la foto con FormData — este formato SÍ conserva los datos a través del redirect 302 de GAS
+async function subirFotoFormData(base64, fileName){
+  if(!API_URL)return {success:false,mensaje:'API no conectada'};
+  try{
+    const fd=new FormData();
+    fd.append('action','uploadFoto');
+    fd.append('base64',base64);
+    fd.append('fileName',fileName);
+    fd.append('mimeType','image/jpeg');
+    const r=await fetch(API_URL,{method:'POST',body:fd,redirect:'follow'});
+    return await r.json();
+  }catch(e){
+    console.error('uploadFoto',e);
+    return {success:false,mensaje:'Error de red al subir: '+e.message};
+  }
 }
 async function conectarAPI(){
   API_URL=document.getElementById('apiUrl').value.trim();
@@ -713,7 +748,7 @@ async function registrarPersona(){
   document.getElementById('fzUploading').classList.remove('hidden');
 
   const nombreArchivo=(fotoNombreArchivo||'foto').replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]/g,'_')+'_'+doc+'.jpg';
-  const up=await callPOST({action:'uploadFoto',base64:fotoBase64,fileName:nombreArchivo,mimeType:'image/jpeg'});
+  const up=await subirFotoFormData(fotoBase64,nombreArchivo);
   document.getElementById('fzUploading').classList.add('hidden');
 
   if(!up||!up.success){
@@ -726,7 +761,7 @@ async function registrarPersona(){
 
   // ── PASO 2: Guardar el registro en el Sheet con el link de la foto ──
   btn.innerHTML='<span style="display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></span> Guardando…';
-  const d=await callPOST({action:'agregarPersona',documento:doc,apellidosNombres:nombre,dia:+dia,mes:+mes,año:+ano,cargo,area,fotoUrl:fotoUrlSubida,genero});
+  const d=await registrarPorGet({documento:doc,apellidosNombres:nombre,dia:+dia,mes:+mes,año:+ano,cargo,area,fotoUrl:fotoUrlSubida,genero});
 
   if(d&&d.success){
     msg.className='msg ok';msg.textContent='✓ '+d.mensaje;
