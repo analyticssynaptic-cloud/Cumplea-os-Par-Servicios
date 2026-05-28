@@ -871,9 +871,7 @@ function buildCardHTML(p,key,frase){
   const imgSrc=driveImg(p.fotoUrl);
   const ph=`<div class="bc-av-ph" style="display:none">${p.genero==='F'?'👩':'👨'}</div>`;
   const imgHTML=imgSrc
-    ?`<img class="bc-av" src="${imgSrc}" alt="${nombre}"
-        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-        crossorigin="anonymous">${ph}`
+    ?`<img class="bc-av" src="${imgSrc}" alt="${nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${ph}`
     :`<div class="bc-av-ph">${p.genero==='F'?'👩':'👨'}</div>`;
   return `<div class="card-wrap"><div class="bc ${key}">${dots}
     <div class="bc-head">${imgHTML}<div><div class="bc-nm">${nombre}</div><div class="bc-rl">${p.cargo} · ${p.area}</div></div></div>
