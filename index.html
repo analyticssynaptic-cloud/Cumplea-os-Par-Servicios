@@ -535,7 +535,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 </div>
 
 <!-- Tarjeta oculta para captura (sin animaciones de entrada, tamaño fijo) -->
-<div id="captureHost" style="position:fixed;left:-9999px;top:0;width:440px"></div>
+<div id="captureHost" style="position:fixed;left:-9999px;top:0;width:440px;height:580px;overflow:hidden"></div>
 
 <div class="overlay" id="emailModal">
   <div class="modal">
@@ -974,10 +974,15 @@ async function prepararCaptura(){
   }
   const host=document.getElementById('captureHost');
   host.innerHTML=buildCardCaptura(personaCopia,disenoActual,frase);
+  // Forzar dimensiones exactas y quitar animaciones de entrada (dejar las de loop)
+  const wrap=host.querySelector('.card-wrap');
+  const bc=host.querySelector('.bc');
+  if(wrap){wrap.style.maxWidth='440px';wrap.style.width='440px';wrap.style.borderRadius='0';wrap.style.animation='none';}
+  if(bc){bc.style.minHeight='580px';bc.style.height='580px';}
   host.querySelectorAll('.bc-nm,.bc-rl,.bc-title,.bc-age,.bc-phrase,.bc-av').forEach(el=>{
     el.style.animation='none';el.style.opacity='1';el.style.transform='none';
   });
-  return host.querySelector('.card-wrap');
+  return wrap;
 }
 
 // Igual que buildCard pero usa la foto en base64 (_fotoB64) para la captura
@@ -1029,35 +1034,56 @@ async function descargarGIF(){
   btn.disabled=true;
   txt.textContent='Preparando…';
 
-  // Obtener worker local (sin CORS)
   const workerUrl=await getGifWorkerUrl();
   if(!workerUrl){
-    alert('No se pudo cargar el motor del GIF. Revisa tu conexión a internet.');
+    alert('No se pudo cargar el motor del GIF.');
     btn.disabled=false;txt.textContent='GIF animado';return;
   }
 
   const node=await prepararCaptura();
-  await new Promise(r=>setTimeout(r,600)); // cargar foto
+  await new Promise(r=>setTimeout(r,700)); // cargar foto base64
 
+  // Resolución para nitidez sin que pese demasiado. Base 440x580.
+  const W=440,H=580,SCALE=1.6;
   const gif=new GIF({
-    workers:2, quality:12, width:440, height:580,
-    workerScript:workerUrl
+    workers:4, quality:1, width:Math.round(W*SCALE), height:Math.round(H*SCALE),
+    workerScript:workerUrl, repeat:0, dither:false
   });
 
-  const FRAMES=14, DELAY=110;
+  // 60 frames a 50ms = 3 segundos de animación en loop suave
+  const FRAMES=60, FRAME_MS=50;
+  const t0=performance.now();
+
   try{
+    // PASO 1: capturar todos los frames como imágenes (rápido, sin esperas largas)
+    const canvases=[];
     for(let i=0;i<FRAMES;i++){
-      txt.textContent='Capturando '+(i+1)+'/'+FRAMES;
-      const canvas=await html2canvas(node,{backgroundColor:'#161616',scale:1,useCORS:true,allowTaint:true,logging:false,width:440,height:580});
-      gif.addFrame(canvas,{delay:DELAY,copy:true});
-      await new Promise(r=>setTimeout(r,DELAY));
+      const pct=Math.round((i/FRAMES)*100);
+      txt.textContent='Capturando '+pct+'%';
+      const canvas=await html2canvas(node,{
+        backgroundColor:'#141414',scale:SCALE,useCORS:true,allowTaint:true,
+        logging:false,width:W,height:H,windowWidth:W,windowHeight:H
+      });
+      canvases.push(canvas);
+      // Pequeña pausa real para que las animaciones CSS avancen entre frames
+      await new Promise(r=>setTimeout(r,FRAME_MS));
     }
-    txt.textContent='Procesando GIF…';
+
+    // PASO 2: añadir frames al encoder
+    txt.textContent='Montando…';
+    for(const cv of canvases){
+      gif.addFrame(cv,{delay:FRAME_MS,copy:true});
+    }
+
+    // PASO 3: renderizar con progreso real
+    gif.on('progress',pp=>{txt.textContent='Generando '+Math.round(pp*100)+'%';});
     gif.on('finished',blob=>{
       const nombre=fmtNombre(personaActual.apellidosNombres).replace(/ /g,'_');
       const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`tarjeta_${nombre}.gif`;a.click();
       document.getElementById('captureHost').innerHTML='';
       btn.disabled=false;txt.textContent='GIF animado';
+      const seg=((performance.now()-t0)/1000).toFixed(1);
+      console.log('GIF generado en '+seg+'s, '+(blob.size/1024/1024).toFixed(1)+'MB');
     });
     gif.render();
   }catch(e){
