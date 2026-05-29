@@ -1043,39 +1043,56 @@ async function descargarGIF(){
   const node=await prepararCaptura();
   await new Promise(r=>setTimeout(r,700)); // cargar foto base64
 
-  // Resolución para nitidez sin que pese demasiado. Base 440x580.
-  const W=440,H=580,SCALE=1.6;
+  // Resolución: 1.3x es buen balance nitidez/velocidad con 100 frames
+  const W=440,H=580,SCALE=1.3;
   const gif=new GIF({
     workers:4, quality:1, width:Math.round(W*SCALE), height:Math.round(H*SCALE),
     workerScript:workerUrl, repeat:0, dither:false
   });
 
-  // 60 frames a 50ms = 3 segundos de animación en loop suave
-  const FRAMES=60, FRAME_MS=50;
+  // 100 frames. Duración total del loop = 4s → cada frame avanza la animación 40ms exactos.
+  const FRAMES=100, TOTAL_MS=4000, FRAME_MS=TOTAL_MS/FRAMES; // 40ms
   const t0=performance.now();
 
+  // Todos los elementos con animación dentro de la tarjeta
+  const animados=node.querySelectorAll('.confetti i,.balloons b,.streamers u,.rings o,.sparkles s,.garland .flag,.bc-deco,.glow-burst,.bc-av-ring');
+
+  // Guardar el animation-delay original de cada elemento (lo que les da variedad)
+  const delaysOrig=[];
+  animados.forEach(el=>{
+    const cs=getComputedStyle(el);
+    delaysOrig.push(parseFloat(cs.animationDelay)||0);
+  });
+
   try{
-    // PASO 1: capturar todos los frames como imágenes (rápido, sin esperas largas)
     const canvases=[];
     for(let i=0;i<FRAMES;i++){
       const pct=Math.round((i/FRAMES)*100);
       txt.textContent='Capturando '+pct+'%';
+
+      // CLAVE: fijar el instante EXACTO de la animación con animation-delay negativo.
+      // No dependemos del reloj real (que varía por lo lento de html2canvas).
+      const tSeg=(i*FRAME_MS)/1000; // segundos transcurridos para este frame
+      animados.forEach((el,idx)=>{
+        el.style.animationPlayState='paused';
+        el.style.animationDelay=(delaysOrig[idx]-tSeg)+'s';
+      });
+
+      // dejar que el navegador aplique el nuevo delay antes de capturar
+      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+
       const canvas=await html2canvas(node,{
         backgroundColor:'#141414',scale:SCALE,useCORS:true,allowTaint:true,
         logging:false,width:W,height:H,windowWidth:W,windowHeight:H
       });
       canvases.push(canvas);
-      // Pequeña pausa real para que las animaciones CSS avancen entre frames
-      await new Promise(r=>setTimeout(r,FRAME_MS));
     }
 
-    // PASO 2: añadir frames al encoder
     txt.textContent='Montando…';
     for(const cv of canvases){
       gif.addFrame(cv,{delay:FRAME_MS,copy:true});
     }
 
-    // PASO 3: renderizar con progreso real
     gif.on('progress',pp=>{txt.textContent='Generando '+Math.round(pp*100)+'%';});
     gif.on('finished',blob=>{
       const nombre=fmtNombre(personaActual.apellidosNombres).replace(/ /g,'_');
@@ -1083,7 +1100,7 @@ async function descargarGIF(){
       document.getElementById('captureHost').innerHTML='';
       btn.disabled=false;txt.textContent='GIF animado';
       const seg=((performance.now()-t0)/1000).toFixed(1);
-      console.log('GIF generado en '+seg+'s, '+(blob.size/1024/1024).toFixed(1)+'MB');
+      console.log('GIF: '+seg+'s, '+(blob.size/1024/1024).toFixed(1)+'MB');
     });
     gif.render();
   }catch(e){
