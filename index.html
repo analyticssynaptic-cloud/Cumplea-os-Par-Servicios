@@ -6,6 +6,8 @@
 <title>Par Servicios · Tarjetas de Cumpleaños</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
 <style>
 :root{
   --bg:#F8F6F2; --bg2:#F0EDE7; --surface:#FFFFFF; --border:#E5DDD2;
@@ -189,6 +191,11 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 .bact-dl:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(196,154,69,.38)}
 .bact-mail{background:linear-gradient(135deg,var(--teal),#1A6A5A);color:#fff}
 .bact-mail:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(42,138,120,.38)}
+.bact-gif{background:linear-gradient(135deg,#7E3FF2,#5A2BC0);color:#fff}
+.bact-gif:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(126,63,242,.38)}
+.bact-gif:disabled{opacity:.6;cursor:wait;transform:none}
+.bact-png{background:linear-gradient(135deg,#2D456E,#172847);color:#fff}
+.bact-png:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(45,69,110,.38)}
 
 /* ════════ TARJETAS CON ANIMACIONES ════════ */
 .card-wrap{width:100%;max-width:440px;border-radius:22px;overflow:hidden;box-shadow:var(--sh-lg);animation:cardIn .6s cubic-bezier(.2,.8,.2,1);position:relative}
@@ -218,7 +225,36 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 .sparkles s{position:absolute;font-size:14px;animation:twinkle ease-in-out infinite}
 @keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1.1)}}
 
-.bc-head{padding:30px 32px 0;position:relative;z-index:3}
+/* Guirnalda de banderines (triángulos colgando arriba) */
+.garland{position:absolute;top:0;left:0;right:0;height:46px;z-index:2;pointer-events:none;overflow:hidden}
+.garland .string{position:absolute;top:11px;left:-2%;width:104%;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.4) 8%,rgba(255,255,255,.4) 92%,transparent);
+  transform:rotate(-1.2deg)}
+.garland .flag{position:absolute;top:11px;width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;
+  border-top:22px solid;transform-origin:top center;animation:swing 2.6s ease-in-out infinite}
+@keyframes swing{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+
+/* Serpentinas onduladas que caen */
+.streamers{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.streamers u{position:absolute;top:-40px;width:5px;height:70px;border-radius:4px;opacity:.55;
+  animation:streamFall linear infinite;transform-origin:top center}
+@keyframes streamFall{
+  0%{transform:translateY(-50px) rotate(0deg);opacity:0}
+  12%{opacity:.6}
+  100%{transform:translateY(660px) rotate(180deg);opacity:.15}
+}
+
+/* Arandelas / círculos de brillo flotando */
+.rings{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.rings o{position:absolute;border-radius:50%;border:2px solid;opacity:.3;animation:ringPulse ease-in-out infinite}
+@keyframes ringPulse{0%,100%{opacity:.12;transform:scale(.85)}50%{opacity:.4;transform:scale(1.1)}}
+
+/* Resplandor radial suave detrás del título */
+.glow-burst{position:absolute;top:42%;left:50%;width:280px;height:280px;transform:translate(-50%,-50%);
+  border-radius:50%;z-index:0;pointer-events:none;animation:glowPulse 3.5s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:.15;transform:translate(-50%,-50%) scale(.9)}50%{opacity:.3;transform:translate(-50%,-50%) scale(1.05)}}
+
+.bc-head{padding:48px 32px 0;position:relative;z-index:3}
 .bc-av-box{position:relative;display:inline-block}
 .bc-av{width:96px;height:96px;border-radius:50%;object-fit:cover;display:block;position:relative;z-index:2;animation:avPop .7s .2s cubic-bezier(.2,.9,.3,1.3) both}
 @keyframes avPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
@@ -488,12 +524,19 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
     </div>
     <div class="preview-wrap" id="actWrap" style="display:none">
       <div class="act-row">
-        <button class="bact bact-dl" onclick="descargarTarjeta()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg>Descargar</button>
-        <button class="bact bact-mail" onclick="abrirEmail()"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5z"/></svg>Plantilla email</button>
+        <button class="bact bact-gif" id="btnGif" onclick="descargarGIF()"><svg viewBox="0 0 24 24"><path d="M11.5 9H13v6h-1.5zM9 9H6c-.6 0-1 .5-1 1v4c0 .5.4 1 1 1h3c.6 0 1-.5 1-1v-2H8.5v1.5h-2v-3H10V10c0-.5-.4-1-1-1zm10 1.5V9h-4.5v6H16v-2h2v-1.5h-2v-1z"/></svg><span id="gifBtnTxt">GIF animado</span></button>
+        <button class="bact bact-png" onclick="descargarPNG()"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5z"/></svg>Imagen PNG</button>
+      </div>
+      <div class="act-row" style="margin-top:10px">
+        <button class="bact bact-dl" onclick="descargarTarjeta()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg>HTML</button>
+        <button class="bact bact-mail" onclick="abrirEmail()"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5z"/></svg>Email</button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Tarjeta oculta para captura (sin animaciones de entrada, tamaño fijo) -->
+<div id="captureHost" style="position:fixed;left:-9999px;top:0;width:440px"></div>
 
 <div class="overlay" id="emailModal">
   <div class="modal">
@@ -796,30 +839,68 @@ function generarTarjeta(){
 }
 function confettiHTML(key){
   const cols=COLORS_CONFETTI[key]||['#fff','#FFE082','#F4A0C0','#6FD3E8'];
-  let h='<div class="confetti">';
-  for(let i=0;i<28;i++){
+  let h='';
+
+  // Resplandor radial detrás del título
+  h+=`<div class="glow-burst" style="background:radial-gradient(circle,${cols[0]}55,transparent 70%)"></div>`;
+
+  // Guirnalda de banderines arriba
+  h+='<div class="garland"><div class="string"></div>';
+  const nFlags=11;
+  for(let i=0;i<nFlags;i++){
+    const c=cols[i%cols.length];
+    const left=(i/(nFlags-1))*100;
+    const delay=(i*0.12).toFixed(2);
+    h+=`<span class="flag" style="left:${left}%;border-top-color:${c};animation-delay:${delay}s"></span>`;
+  }
+  h+='</div>';
+
+  // Confeti que cae
+  h+='<div class="confetti">';
+  for(let i=0;i<30;i++){
     const c=cols[i%cols.length];
     const left=Math.random()*100, dur=3+Math.random()*3, delay=Math.random()*4, rot=Math.random()*360;
     const round=Math.random()>.6?'border-radius:50%':'';
     h+=`<i style="left:${left}%;background:${c};animation-duration:${dur}s;animation-delay:${delay}s;transform:rotate(${rot}deg);${round}"></i>`;
   }
   h+='</div>';
-  // Globos
+
+  // Serpentinas onduladas
+  h+='<div class="streamers">';
+  for(let i=0;i<7;i++){
+    const c=cols[i%cols.length];
+    const left=Math.random()*100, dur=4+Math.random()*3, delay=Math.random()*4, skew=(Math.random()*30-15);
+    h+=`<u style="left:${left}%;background:linear-gradient(${c},transparent);animation-duration:${dur}s;animation-delay:${delay}s;transform:skewX(${skew}deg)"></u>`;
+  }
+  h+='</div>';
+
+  // Globos flotando
   h+='<div class="balloons">';
   for(let i=0;i<5;i++){
     const c=cols[i%cols.length];
-    const left=10+Math.random()*80, dur=7+Math.random()*5, delay=Math.random()*6;
+    const left=8+Math.random()*84, dur=7+Math.random()*5, delay=Math.random()*6;
     h+=`<b style="left:${left}%;background:${c};animation-duration:${dur}s;animation-delay:${delay}s"></b>`;
   }
   h+='</div>';
-  // Destellos
-  h+='<div class="sparkles">';
-  const stars=['✦','✧','⋆','✦'];
-  for(let i=0;i<8;i++){
-    const left=Math.random()*100, top=Math.random()*70, dur=1.5+Math.random()*2, delay=Math.random()*3;
-    h+=`<s style="left:${left}%;top:${top}%;color:${cols[i%cols.length]};animation-duration:${dur}s;animation-delay:${delay}s">${stars[i%stars.length]}</s>`;
+
+  // Arandelas / anillos pulsantes
+  h+='<div class="rings">';
+  for(let i=0;i<5;i++){
+    const c=cols[i%cols.length];
+    const sz=20+Math.random()*40, left=Math.random()*90, top=10+Math.random()*70, dur=2.5+Math.random()*2, delay=Math.random()*3;
+    h+=`<o style="width:${sz}px;height:${sz}px;left:${left}%;top:${top}%;border-color:${c};animation-duration:${dur}s;animation-delay:${delay}s"></o>`;
   }
   h+='</div>';
+
+  // Destellos / estrellas
+  h+='<div class="sparkles">';
+  const stars=['✦','✧','⋆','✨','✦'];
+  for(let i=0;i<10;i++){
+    const left=Math.random()*100, top=Math.random()*78, dur=1.5+Math.random()*2, delay=Math.random()*3, sz=10+Math.random()*8;
+    h+=`<s style="left:${left}%;top:${top}%;color:${cols[i%cols.length]};font-size:${sz}px;animation-duration:${dur}s;animation-delay:${delay}s">${stars[i%stars.length]}</s>`;
+  }
+  h+='</div>';
+
   return h;
 }
 function buildCard(p,key,frase){
@@ -854,6 +935,75 @@ function descargarTarjeta(){
 </head><body>${buildCard(personaActual,disenoActual,frase)}</body></html>`;
   dl(full,`cumpleanos_${nombre}.html`,'text/html');
 }
+
+// ── Preparar un nodo de tarjeta para captura (sin animaciones de entrada) ──
+function prepararCaptura(){
+  const frase=document.getElementById('phraseInput').value||(personaActual.genero==='F'?FRASES_F[0]:FRASES_M[0]);
+  const host=document.getElementById('captureHost');
+  host.innerHTML=buildCard(personaActual,disenoActual,frase);
+  const card=host.querySelector('.bc');
+  // Desactivar animaciones de ENTRADA (que dejan elementos invisibles a mitad), dejar las de loop
+  host.querySelectorAll('.bc-nm,.bc-rl,.bc-title,.bc-age,.bc-phrase,.bc-av').forEach(el=>{
+    el.style.animation='none';el.style.opacity='1';el.style.transform='none';
+  });
+  return host.querySelector('.card-wrap');
+}
+
+// ── DESCARGAR PNG (estático, perfecto para cualquier correo) ──
+async function descargarPNG(){
+  if(!personaActual||typeof html2canvas==='undefined'){alert('No se pudo cargar el generador. Revisa tu conexión.');return;}
+  const node=prepararCaptura();
+  await new Promise(r=>setTimeout(r,400)); // dar tiempo a cargar la foto
+  try{
+    const canvas=await html2canvas(node,{backgroundColor:null,scale:2,useCORS:true,allowTaint:true,logging:false});
+    const nombre=fmtNombre(personaActual.apellidosNombres).replace(/ /g,'_');
+    canvas.toBlob(blob=>{
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`tarjeta_${nombre}.png`;a.click();
+    },'image/png');
+  }catch(e){alert('Error generando PNG: '+e.message);}
+  document.getElementById('captureHost').innerHTML='';
+}
+
+// ── DESCARGAR GIF ANIMADO (confeti en movimiento, ideal para Outlook) ──
+async function descargarGIF(){
+  if(!personaActual||typeof html2canvas==='undefined'||typeof GIF==='undefined'){
+    alert('No se pudo cargar el generador de GIF. Revisa tu conexión.');return;
+  }
+  const btn=document.getElementById('btnGif');const txt=document.getElementById('gifBtnTxt');
+  btn.disabled=true;
+
+  const node=prepararCaptura();
+  await new Promise(r=>setTimeout(r,500)); // cargar foto
+
+  // gif.js usa un worker desde CDN
+  const gif=new GIF({
+    workers:2, quality:12, width:440, height:580,
+    workerScript:'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
+  });
+
+  const FRAMES=14, DELAY=110;
+  try{
+    for(let i=0;i<FRAMES;i++){
+      txt.textContent='Capturando '+(i+1)+'/'+FRAMES;
+      const canvas=await html2canvas(node,{backgroundColor:'#1a1a1a',scale:1,useCORS:true,allowTaint:true,logging:false,width:440,height:580});
+      gif.addFrame(canvas,{delay:DELAY,copy:true});
+      await new Promise(r=>setTimeout(r,DELAY)); // dejar avanzar las animaciones de loop
+    }
+    txt.textContent='Procesando GIF…';
+    gif.on('finished',blob=>{
+      const nombre=fmtNombre(personaActual.apellidosNombres).replace(/ /g,'_');
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`tarjeta_${nombre}.gif`;a.click();
+      document.getElementById('captureHost').innerHTML='';
+      btn.disabled=false;txt.textContent='GIF animado';
+    });
+    gif.render();
+  }catch(e){
+    alert('Error generando GIF: '+e.message);
+    btn.disabled=false;txt.textContent='GIF animado';
+    document.getElementById('captureHost').innerHTML='';
+  }
+}
+
 
 function abrirEmail(){
   if(!personaActual)return;
