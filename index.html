@@ -842,6 +842,8 @@ function resetFoto(){
 
 // ═══ TARJETA ═══
 function edad(p){return new Date().getFullYear()-p.año;}
+// Fecha de cumpleaños con el AÑO ACTUAL (ej: "15 de Agosto de 2026")
+function fechaCumpleActual(p){return `${p.dia} de ${MESES[p.mes]} de ${new Date().getFullYear()}`;}
 function generarTarjeta(){
   if(!personaActual)return;
   const g=personaActual.genero;
@@ -928,7 +930,7 @@ function buildCard(p,key,frase){
     <div class="bc-body">
       <div class="bc-deco">${d.deco}</div>
       <div class="bc-title">¡Feliz Cumpleaños!</div>
-      <div class="bc-age">🎉 ${edad(p)} años</div>
+      <div class="bc-age">🎂 ${fechaCumpleActual(p)}</div>
       <div class="bc-phrase">${frase}</div>
     </div>
     <div class="bc-foot">Par Servicios · ${fecha}</div>
@@ -998,7 +1000,7 @@ function buildCardCaptura(p,key,frase){
     <div class="bc-body">
       <div class="bc-deco">${d.deco}</div>
       <div class="bc-title">¡Feliz Cumpleaños!</div>
-      <div class="bc-age">🎉 ${edad(p)} años</div>
+      <div class="bc-age">🎂 ${fechaCumpleActual(p)}</div>
       <div class="bc-phrase">${frase}</div>
     </div>
     <div class="bc-foot">Par Servicios · ${fecha}</div>
@@ -1043,15 +1045,15 @@ async function descargarGIF(){
   const node=await prepararCaptura();
   await new Promise(r=>setTimeout(r,700)); // cargar foto base64
 
-  // Resolución: 1.3x es buen balance nitidez/velocidad con 100 frames
-  const W=440,H=580,SCALE=1.3;
+  // Resolución 1.5x para buena nitidez. Base 440x580.
+  const W=440,H=580,SCALE=1.5;
   const gif=new GIF({
     workers:4, quality:1, width:Math.round(W*SCALE), height:Math.round(H*SCALE),
     workerScript:workerUrl, repeat:0, dither:false
   });
 
-  // 100 frames. Duración total del loop = 4s → cada frame avanza la animación 40ms exactos.
-  const FRAMES=100, TOTAL_MS=4000, FRAME_MS=TOTAL_MS/FRAMES; // 40ms
+  // 170 frames. Loop de 5.1s → cada frame avanza la animación 30ms exactos.
+  const FRAMES=170, TOTAL_MS=5100, FRAME_MS=TOTAL_MS/FRAMES; // 30ms
   const t0=performance.now();
 
   // Todos los elementos con animación dentro de la tarjeta
@@ -1152,7 +1154,7 @@ body{margin:0;padding:0;background:#f2f0ec;font-family:'Outfit',Arial,sans-serif
   <div style="background:${EC.bBg};padding:32px 30px 24px;text-align:center;animation:fu .9s ease .2s both">
     ${foto}
     <div style="font-family:'Fraunces',Georgia,serif;font-size:1.45rem;font-weight:700;color:#fff;margin-bottom:4px">${nombre}</div>
-    <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 14px;border-radius:30px;background:${EC.agePill};color:${EC.title};margin:6px 0 10px">🎉 ${edad(p)} años</div>
+    <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 14px;border-radius:30px;background:${EC.agePill};color:${EC.title};margin:6px 0 10px">🎂 ${fechaCumpleActual(p)}</div>
     <div style="font-size:.82rem;color:${EC.role}">${p.cargo} · ${p.area}</div>
   </div>
   <div style="background:${EC.pBg};padding:24px 40px;text-align:center;animation:fu 1s ease .4s both">
