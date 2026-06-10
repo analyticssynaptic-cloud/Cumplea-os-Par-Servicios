@@ -574,6 +574,9 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
   </div>
   <div class="hdr-right">
     <span class="status idle" id="apiStatus">Sin conectar</span>
+    <button class="gear" id="btnReload" onclick="conectarAPI()" title="Recargar datos del personal" style="display:none">
+      <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+    </button>
     <div class="user-box" id="userBox" style="display:none">
       <div class="user-avt" id="userAvt">U</div>
       <span id="userName">Usuario</span>
@@ -730,7 +733,7 @@ window.GIF_WORKER_BLOB_URL = URL.createObjectURL(new Blob([`// gif.worker.js 0.2
 </script>
 
 <script>
-const DEFAULT_API='https://script.google.com/macros/s/AKfycbyE2LqYdqa-IpYQEghfwha66SXcwws7sx7tVuP25wfoaP6ecCBiUK7qzBX2GHOyW1YpJQ/exec';
+const DEFAULT_API='https://script.google.com/macros/s/AKfycbzvJ5qBVWLbGdYz5RS8nngeFQjqC57J5ig29kV16aLpQ4Ke1dRqnFDmIErEwEQ8W5T6uA/exec';
 let API_URL='', personas=[], personaActual=null, disenoActual='m1';
 let fotoBase64='', fotoUrlSubida='', fotoNombreArchivo='';
 const MESES=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -835,14 +838,28 @@ async function subirFotoFormData(base64, fileName){
 }
 async function conectarAPI(){
   API_URL=document.getElementById('apiUrl').value.trim();
-  if(!API_URL)return;
+  if(!API_URL){
+    const s=document.getElementById('apiStatus');s.className='status err';s.textContent='Falta URL del GAS';
+    document.getElementById('personList').innerHTML='<div class="empty-msg">⚠ Configura la URL del GAS arriba (engranaje ⚙)</div>';
+    return;
+  }
   localStorage.setItem('ps_api',API_URL);
   const s=document.getElementById('apiStatus');s.className='status idle';s.textContent='Conectando…';
+  document.getElementById('personList').innerHTML='<div class="loading"><div class="spin"></div>Cargando personas…</div>';
   const d=await callGET({action:'getPersonas'});
   if(d&&d.success){
     personas=d.datos||[];s.className='status ok';s.textContent=personas.length+' personas';
-    renderPersonList(personas);cargarProximos();
-  }else{s.className='status err';s.textContent='Sin conexión';}
+    if(personas.length===0){
+      document.getElementById('personList').innerHTML='<div class="empty-msg">No hay personas registradas todavía. Usa la pestaña "Registrar" para añadir la primera.</div>';
+    }else{
+      renderPersonList(personas);
+    }
+    cargarProximos();
+  }else{
+    s.className='status err';s.textContent='Sin conexión';
+    const errMsg=(d&&d.mensaje)?d.mensaje:'No se pudo conectar con el GAS';
+    document.getElementById('personList').innerHTML='<div class="empty-msg" style="color:#B82020">⚠ '+errMsg+'<br><br><button class="btn-mini" onclick="conectarAPI()" style="margin-top:8px">Reintentar</button></div>';
+  }
 }
 
 function switchTab(t){
@@ -1403,6 +1420,7 @@ function mostrarApp(){
   document.getElementById('authOvl').classList.add('hidden');
   const box=document.getElementById('userBox');
   box.style.display='flex';
+  document.getElementById('btnReload').style.display='flex';
   const nombre=usuarioActual.nombre||usuarioActual.email.split('@')[0];
   document.getElementById('userName').textContent=nombre;
   document.getElementById('userAvt').textContent=nombre.charAt(0).toUpperCase();
@@ -1441,8 +1459,9 @@ async function hacerLogin(){
   if(r&&r.success){
     usuarioActual={email:r.email,nombre:r.nombre};
     localStorage.setItem('ps_sesion',JSON.stringify(usuarioActual));
-    msg.className='auth-msg ok';msg.textContent='✓ Bienvenido';
-    setTimeout(()=>{mostrarApp();conectarAPI();},400);
+    msg.className='auth-msg ok';msg.textContent='✓ Bienvenido, cargando datos…';
+    mostrarApp();
+    await conectarAPI();
   }else{
     msg.className='auth-msg err';msg.textContent='✗ '+((r&&r.mensaje)||'Error al iniciar sesión');
   }
@@ -1468,10 +1487,11 @@ async function hacerRegistro(){
   btn.disabled=false;btn.textContent='Crear cuenta';
 
   if(r&&r.success){
-    msg.className='auth-msg ok';msg.textContent='✓ Cuenta creada. Iniciando sesión…';
+    msg.className='auth-msg ok';msg.textContent='✓ Cuenta creada. Cargando datos…';
     usuarioActual={email:r.email,nombre:r.nombre};
     localStorage.setItem('ps_sesion',JSON.stringify(usuarioActual));
-    setTimeout(()=>{mostrarApp();conectarAPI();},600);
+    mostrarApp();
+    await conectarAPI();
   }else{
     msg.className='auth-msg err';msg.textContent='✗ '+((r&&r.mensaje)||'Error al registrar');
   }
@@ -1482,6 +1502,7 @@ function cerrarSesion(){
   localStorage.removeItem('ps_sesion');
   usuarioActual=null;
   document.getElementById('userBox').style.display='none';
+  document.getElementById('btnReload').style.display='none';
   document.getElementById('authOvl').classList.remove('hidden');
   // Limpiar campos
   ['loginEmail','loginPwd','regNombre','regEmail','regPwd','regPwd2'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
