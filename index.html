@@ -406,166 +406,9 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 .empty-msg{text-align:center;padding:32px 20px;color:var(--ink3);font-size:.84rem}
 
 @media(max-width:960px){.wrap{grid-template-columns:1fr}.col-l{border-right:none;border-bottom:1px solid var(--border)}.plist{max-height:300px}}
-
-/* ═══════ LOGIN / REGISTRO ═══════ */
-.auth-ovl{position:fixed;inset:0;background:linear-gradient(135deg,#1E1A16 0%,#2A1F14 100%);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-ovl.hidden{display:none}
-.auth-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.auth-bg::before,.auth-bg::after{content:'';position:absolute;width:480px;height:480px;border-radius:50%;filter:blur(120px);opacity:.35}
-.auth-bg::before{background:var(--gold);top:-160px;left:-120px}
-.auth-bg::after{background:var(--rose);bottom:-180px;right:-140px}
-.auth-card{position:relative;width:100%;max-width:440px;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-radius:22px;padding:38px 36px;box-shadow:0 24px 70px rgba(0,0,0,.45);z-index:1}
-.auth-head{text-align:center;margin-bottom:26px}
-.auth-logo{width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,var(--gold),var(--gold-d));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px rgba(196,154,69,.4)}
-.auth-logo svg{width:30px;height:30px;fill:#fff}
-.auth-title{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:900;letter-spacing:-.02em;margin-bottom:5px}
-.auth-sub{color:var(--ink2);font-size:.84rem}
-.auth-tabs{display:flex;background:var(--bg2);border-radius:11px;padding:4px;margin-bottom:22px}
-.auth-tab{flex:1;padding:9px;background:none;border:none;font-size:.84rem;font-weight:600;cursor:pointer;color:var(--ink2);border-radius:8px;font-family:'Outfit';transition:.2s}
-.auth-tab.active{background:#fff;color:var(--ink);box-shadow:var(--sh-sm)}
-.auth-form{display:flex;flex-direction:column;gap:13px}
-.auth-fg{display:flex;flex-direction:column;gap:5px}
-.auth-fg label{font-size:.7rem;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
-.auth-fg input{border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-size:.88rem;font-family:'Outfit';background:#fff;outline:none;transition:.2s}
-.auth-fg input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(196,154,69,.13)}
-.auth-hint{font-size:.71rem;color:var(--ink3);margin-top:2px}
-.auth-btn{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#fff;border:none;border-radius:11px;padding:13px;font-size:.92rem;font-weight:700;cursor:pointer;font-family:'Outfit';margin-top:6px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.auth-btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(196,154,69,.4)}
-.auth-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.auth-msg{padding:10px 13px;border-radius:9px;font-size:.8rem;display:none}
-.auth-msg.ok{background:#EBF7EF;color:#1E7A42;display:block}
-.auth-msg.err{background:#FDECEC;color:#B82020;display:block}
-.auth-foot{text-align:center;margin-top:18px;font-size:.74rem;color:var(--ink3)}
-
-/* Usuario en header */
-.user-box{display:flex;align-items:center;gap:8px;background:var(--bg2);padding:5px 11px 5px 5px;border-radius:24px;font-size:.76rem;font-weight:600}
-.user-avt{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#fff;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700}
-.btn-logout{background:none;border:none;color:var(--ink2);cursor:pointer;font-size:.72rem;font-weight:600;padding:4px 8px;border-radius:7px;font-family:'Outfit'}
-.btn-logout:hover{background:#FDECEC;color:#B82020}
-
-/* Acciones en card persona */
-.pcard{position:relative}
-.pcard-acts{display:flex;gap:4px;margin-left:4px;flex-shrink:0}
-.pcard-act{background:var(--bg2);border:none;width:28px;height:28px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.18s;color:var(--ink2)}
-.pcard-act:hover{background:var(--gold);color:#fff}
-.pcard-act.del:hover{background:#B82020;color:#fff}
-.pcard-act svg{width:13px;height:13px;fill:currentColor}
-
-/* Modal genérico */
-.modal-ovl{position:fixed;inset:0;background:rgba(20,15,10,.55);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal-ovl.hidden{display:none}
-.modal-box{background:#fff;border-radius:18px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 70px rgba(0,0,0,.35)}
-.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.modal-title{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:900;letter-spacing:-.01em}
-.modal-close{background:var(--bg2);border:none;width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:1.1rem;color:var(--ink2)}
-.modal-close:hover{background:var(--border);color:var(--ink)}
-.modal-body{padding:22px 24px}
-.modal-foot{padding:14px 24px 20px;display:flex;gap:10px;justify-content:flex-end}
-.btn-cancel{background:var(--bg2);color:var(--ink);border:1.5px solid var(--border);border-radius:10px;padding:10px 18px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'Outfit'}
-.btn-save{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:.84rem;font-weight:700;cursor:pointer;font-family:'Outfit'}
-.btn-save:disabled{opacity:.5;cursor:not-allowed}
-.btn-danger{background:#B82020;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:.84rem;font-weight:700;cursor:pointer;font-family:'Outfit'}
-.btn-danger:hover{background:#921818}
-.del-warn{background:#FDECEC;color:#B82020;border-radius:10px;padding:14px;font-size:.85rem;margin-bottom:6px}
-.del-warn b{display:block;margin-bottom:4px;font-weight:700}
 </style>
 </head>
 <body>
-
-<!-- ═══ LOGIN OVERLAY ═══ -->
-<div class="auth-ovl" id="authOvl">
-  <div class="auth-bg"></div>
-  <div class="auth-card">
-    <div class="auth-head">
-      <div class="auth-logo"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
-      <div class="auth-title">Par Servicios</div>
-      <div class="auth-sub">Sistema de Tarjetas de Cumpleaños</div>
-    </div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin" onclick="switchAuth('login')">Iniciar sesión</button>
-      <button class="auth-tab" id="tabReg" onclick="switchAuth('reg')">Registrarse</button>
-    </div>
-
-    <div class="auth-form" id="formLogin">
-      <div class="auth-fg"><label>Correo corporativo</label>
-        <input type="email" id="loginEmail" placeholder="usuario@parservicios.com" autocomplete="username"/></div>
-      <div class="auth-fg"><label>Contraseña</label>
-        <input type="password" id="loginPwd" placeholder="••••••••" autocomplete="current-password"/></div>
-      <div class="auth-msg" id="loginMsg"></div>
-      <button class="auth-btn" id="btnLogin" onclick="hacerLogin()">Entrar</button>
-    </div>
-
-    <div class="auth-form hidden" id="formReg">
-      <div class="auth-fg"><label>Nombre completo</label>
-        <input type="text" id="regNombre" placeholder="Ej: Juan Pérez"/></div>
-      <div class="auth-fg"><label>Correo corporativo</label>
-        <input type="email" id="regEmail" placeholder="usuario@parservicios.com" autocomplete="username"/>
-        <div class="auth-hint">Solo se permiten correos <b>@parservicios.com</b></div></div>
-      <div class="auth-fg"><label>Contraseña</label>
-        <input type="password" id="regPwd" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/></div>
-      <div class="auth-fg"><label>Confirmar contraseña</label>
-        <input type="password" id="regPwd2" placeholder="Repite la contraseña" autocomplete="new-password"/></div>
-      <div class="auth-msg" id="regMsg2"></div>
-      <button class="auth-btn" id="btnReg2" onclick="hacerRegistro()">Crear cuenta</button>
-    </div>
-
-    <div class="auth-foot">© Par Servicios · Acceso solo personal autorizado</div>
-  </div>
-</div>
-
-<!-- ═══ MODAL EDITAR ═══ -->
-<div class="modal-ovl hidden" id="modalEdit">
-  <div class="modal-box">
-    <div class="modal-head">
-      <div class="modal-title">✏️ Editar persona</div>
-      <button class="modal-close" onclick="cerrarEdit()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-grid">
-        <div class="fg"><label>Nº Documento</label><input type="text" id="eDoc" disabled style="opacity:.6;cursor:not-allowed"/></div>
-        <div class="fg"><label>Cargo *</label><input type="text" id="eCargo"/></div>
-        <div class="fg full"><label>Apellidos y Nombres *</label><input type="text" id="eNombre"/></div>
-        <div class="fg"><label>Área *</label><input type="text" id="eArea"/></div>
-        <div class="fg"><label>Día *</label><input type="number" id="eDia" min="1" max="31"/></div>
-        <div class="fg"><label>Mes *</label>
-          <select id="eMes"><option value="">-- Mes --</option>
-            <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
-            <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
-            <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
-            <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option></select>
-        </div>
-        <div class="fg"><label>Año Nacimiento *</label><input type="number" id="eAno" min="1950" max="2010"/></div>
-        <div class="fg full"><label>URL Foto (opcional, deja vacío para conservar la actual)</label>
-          <input type="text" id="eFotoUrl" placeholder="https://drive.google.com/..."/></div>
-      </div>
-      <div id="editMsg" class="msg"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn-cancel" onclick="cerrarEdit()">Cancelar</button>
-      <button class="btn-save" id="btnGuardarEdit" onclick="guardarEdicion()">Guardar cambios</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL ELIMINAR ═══ -->
-<div class="modal-ovl hidden" id="modalDel">
-  <div class="modal-box" style="max-width:420px">
-    <div class="modal-head">
-      <div class="modal-title">🗑️ Eliminar persona</div>
-      <button class="modal-close" onclick="cerrarDel()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="del-warn"><b>Esta acción no se puede deshacer.</b>Se eliminará el registro de la hoja de cálculo.</div>
-      <p style="font-size:.88rem;margin-top:14px">¿Eliminar a <b id="delNombre"></b>?</p>
-      <p style="font-size:.78rem;color:var(--ink2);margin-top:6px">Documento: <span id="delDoc"></span></p>
-      <div id="delMsg" class="msg"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn-cancel" onclick="cerrarDel()">Cancelar</button>
-      <button class="btn-danger" id="btnConfirmDel" onclick="confirmarEliminar()">Sí, eliminar</button>
-    </div>
-  </div>
-</div>
 
 <header class="hdr">
   <div class="logo">
@@ -574,14 +417,6 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
   </div>
   <div class="hdr-right">
     <span class="status idle" id="apiStatus">Sin conectar</span>
-    <button class="gear" id="btnReload" onclick="conectarAPI()" title="Recargar datos del personal" style="display:none">
-      <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-    </button>
-    <div class="user-box" id="userBox" style="display:none">
-      <div class="user-avt" id="userAvt">U</div>
-      <span id="userName">Usuario</span>
-      <button class="btn-logout" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
-    </div>
     <button class="gear" onclick="toggleApiConfig()" title="Configurar conexión">
       <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
     </button>
@@ -733,7 +568,7 @@ window.GIF_WORKER_BLOB_URL = URL.createObjectURL(new Blob([`// gif.worker.js 0.2
 </script>
 
 <script>
-const DEFAULT_API='https://script.google.com/macros/s/AKfycbzvJ5qBVWLbGdYz5RS8nngeFQjqC57J5ig29kV16aLpQ4Ke1dRqnFDmIErEwEQ8W5T6uA/exec';
+const DEFAULT_API='https://script.google.com/macros/s/AKfycbxPI5RmfnCcYESXA6qOIjMvZ9b9m12BoRMG2OplEY95VDzpiloAqB2oeOiOm9UHwch9yA/exec';
 let API_URL='', personas=[], personaActual=null, disenoActual='m1';
 let fotoBase64='', fotoUrlSubida='', fotoNombreArchivo='';
 const MESES=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -779,9 +614,7 @@ const FRASES_F=[
 window.onload=()=>{
   const saved=localStorage.getItem('ps_api')||DEFAULT_API;
   document.getElementById('apiUrl').value=saved; API_URL=saved;
-  renderDesignGrids(); renderChips('M'); setupDrag();
-  // Verificar si hay sesión activa
-  verificarSesion();
+  renderDesignGrids(); renderChips('M'); conectarAPI(); setupDrag();
 };
 
 function toggleApiConfig(){document.getElementById('apiCollapse').classList.toggle('open');}
@@ -838,28 +671,14 @@ async function subirFotoFormData(base64, fileName){
 }
 async function conectarAPI(){
   API_URL=document.getElementById('apiUrl').value.trim();
-  if(!API_URL){
-    const s=document.getElementById('apiStatus');s.className='status err';s.textContent='Falta URL del GAS';
-    document.getElementById('personList').innerHTML='<div class="empty-msg">⚠ Configura la URL del GAS arriba (engranaje ⚙)</div>';
-    return;
-  }
+  if(!API_URL)return;
   localStorage.setItem('ps_api',API_URL);
   const s=document.getElementById('apiStatus');s.className='status idle';s.textContent='Conectando…';
-  document.getElementById('personList').innerHTML='<div class="loading"><div class="spin"></div>Cargando personas…</div>';
   const d=await callGET({action:'getPersonas'});
   if(d&&d.success){
     personas=d.datos||[];s.className='status ok';s.textContent=personas.length+' personas';
-    if(personas.length===0){
-      document.getElementById('personList').innerHTML='<div class="empty-msg">No hay personas registradas todavía. Usa la pestaña "Registrar" para añadir la primera.</div>';
-    }else{
-      renderPersonList(personas);
-    }
-    cargarProximos();
-  }else{
-    s.className='status err';s.textContent='Sin conexión';
-    const errMsg=(d&&d.mensaje)?d.mensaje:'No se pudo conectar con el GAS';
-    document.getElementById('personList').innerHTML='<div class="empty-msg" style="color:#B82020">⚠ '+errMsg+'<br><br><button class="btn-mini" onclick="conectarAPI()" style="margin-top:8px">Reintentar</button></div>';
-  }
+    renderPersonList(personas);cargarProximos();
+  }else{s.className='status err';s.textContent='Sin conexión';}
 }
 
 function switchTab(t){
@@ -882,24 +701,12 @@ function renderPersonList(lista){
   if(!lista.length){el.innerHTML='<div class="empty-msg">No se encontraron personas</div>';return;}
   el.innerHTML=lista.map(p=>{
     const img=driveImg(p.fotoUrl);
-    const docEsc=String(p.documento).replace(/'/g,"\\'");
-    return `<div class="pcard" id="pc-${p.documento}">
-      <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer" onclick="seleccionarPersona('${docEsc}')">
-        <img class="pcard-img${img?'':' hidden'}" src="${img||''}" onerror="this.classList.add('hidden');this.nextElementSibling.classList.remove('hidden')">
-        <div class="pcard-ph${img?' hidden':''}">${p.genero==='F'?'👩':'👨'}</div>
-        <div class="pcard-info"><div class="pcard-name">${p.apellidosNombres}</div>
-          <div class="pcard-meta">${p.cargo} · ${p.area}</div><div class="pcard-meta">${p.dia} de ${MESES[p.mes]}</div></div>
-        <span class="gbadge ${p.genero==='F'?'gf':'gm'}">${p.genero==='F'?'♀':'♂'}</span>
-      </div>
-      <div class="pcard-acts">
-        <button class="pcard-act" title="Editar" onclick="abrirEdit('${docEsc}')">
-          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-        </button>
-        <button class="pcard-act del" title="Eliminar" onclick="abrirDel('${docEsc}')">
-          <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-        </button>
-      </div>
-    </div>`;}).join('');
+    return `<div class="pcard" id="pc-${p.documento}" onclick="seleccionarPersona('${p.documento}')">
+      <img class="pcard-img${img?'':' hidden'}" src="${img||''}" onerror="this.classList.add('hidden');this.nextElementSibling.classList.remove('hidden')">
+      <div class="pcard-ph${img?' hidden':''}">${p.genero==='F'?'👩':'👨'}</div>
+      <div class="pcard-info"><div class="pcard-name">${p.apellidosNombres}</div>
+        <div class="pcard-meta">${p.cargo} · ${p.area}</div><div class="pcard-meta">${p.dia} de ${MESES[p.mes]}</div></div>
+      <span class="gbadge ${p.genero==='F'?'gf':'gm'}">${p.genero==='F'?'♀':'♂'}</span></div>`;}).join('');
 }
 function filtrarPersonas(){
   const q=document.getElementById('searchInput').value.toLowerCase();
@@ -1396,198 +1203,6 @@ async function cargarProximos(){
       <button class="btn-mini" onclick="irATarjeta('${p.documento}')">Crear</button></div>`;}).join('')+'</div>';
 }
 function irATarjeta(doc){switchTab('buscar');seleccionarPersona(doc);document.querySelector('.col-r').scrollIntoView({behavior:'smooth'});}
-
-// ═══════════════════════════════════════════════════════════════
-// AUTENTICACIÓN
-// ═══════════════════════════════════════════════════════════════
-let usuarioActual=null;
-
-function verificarSesion(){
-  const ses=localStorage.getItem('ps_sesion');
-  if(ses){
-    try{
-      usuarioActual=JSON.parse(ses);
-      mostrarApp();
-      conectarAPI();
-      return;
-    }catch(e){localStorage.removeItem('ps_sesion');}
-  }
-  // No hay sesión → mostrar login (ya está visible por default)
-  document.getElementById('authOvl').classList.remove('hidden');
-}
-
-function mostrarApp(){
-  document.getElementById('authOvl').classList.add('hidden');
-  const box=document.getElementById('userBox');
-  box.style.display='flex';
-  document.getElementById('btnReload').style.display='flex';
-  const nombre=usuarioActual.nombre||usuarioActual.email.split('@')[0];
-  document.getElementById('userName').textContent=nombre;
-  document.getElementById('userAvt').textContent=nombre.charAt(0).toUpperCase();
-}
-
-function switchAuth(t){
-  document.getElementById('tabLogin').classList.toggle('active',t==='login');
-  document.getElementById('tabReg').classList.toggle('active',t==='reg');
-  document.getElementById('formLogin').classList.toggle('hidden',t!=='login');
-  document.getElementById('formReg').classList.toggle('hidden',t!=='reg');
-  document.getElementById('loginMsg').className='auth-msg';
-  document.getElementById('regMsg2').className='auth-msg';
-}
-
-function validarEmailDominio(email){
-  email=String(email||'').trim().toLowerCase();
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return {ok:false,msg:'Correo no válido'};
-  if(!email.endsWith('@parservicios.com'))return {ok:false,msg:'Solo se permiten correos @parservicios.com'};
-  return {ok:true,email:email};
-}
-
-async function hacerLogin(){
-  const msg=document.getElementById('loginMsg');msg.className='auth-msg';
-  const btn=document.getElementById('btnLogin');
-  const email=document.getElementById('loginEmail').value;
-  const pwd=document.getElementById('loginPwd').value;
-  if(!email||!pwd){msg.className='auth-msg err';msg.textContent='Ingresa correo y contraseña';return;}
-  const v=validarEmailDominio(email);
-  if(!v.ok){msg.className='auth-msg err';msg.textContent=v.msg;return;}
-  if(!API_URL){msg.className='auth-msg err';msg.textContent='URL del GAS no configurada';return;}
-
-  btn.disabled=true;btn.textContent='Validando…';
-  const r=await callGET({action:'loginUsuario',email:v.email,password:pwd});
-  btn.disabled=false;btn.textContent='Entrar';
-
-  if(r&&r.success){
-    usuarioActual={email:r.email,nombre:r.nombre};
-    localStorage.setItem('ps_sesion',JSON.stringify(usuarioActual));
-    msg.className='auth-msg ok';msg.textContent='✓ Bienvenido, cargando datos…';
-    mostrarApp();
-    await conectarAPI();
-  }else{
-    msg.className='auth-msg err';msg.textContent='✗ '+((r&&r.mensaje)||'Error al iniciar sesión');
-  }
-}
-
-async function hacerRegistro(){
-  const msg=document.getElementById('regMsg2');msg.className='auth-msg';
-  const btn=document.getElementById('btnReg2');
-  const nombre=document.getElementById('regNombre').value.trim();
-  const email=document.getElementById('regEmail').value;
-  const pwd=document.getElementById('regPwd').value;
-  const pwd2=document.getElementById('regPwd2').value;
-
-  if(!nombre||!email||!pwd){msg.className='auth-msg err';msg.textContent='Completa todos los campos';return;}
-  const v=validarEmailDominio(email);
-  if(!v.ok){msg.className='auth-msg err';msg.textContent=v.msg;return;}
-  if(pwd.length<6){msg.className='auth-msg err';msg.textContent='La contraseña debe tener al menos 6 caracteres';return;}
-  if(pwd!==pwd2){msg.className='auth-msg err';msg.textContent='Las contraseñas no coinciden';return;}
-  if(!API_URL){msg.className='auth-msg err';msg.textContent='URL del GAS no configurada';return;}
-
-  btn.disabled=true;btn.textContent='Creando cuenta…';
-  const r=await callGET({action:'registroUsuario',email:v.email,password:pwd,nombre:nombre});
-  btn.disabled=false;btn.textContent='Crear cuenta';
-
-  if(r&&r.success){
-    msg.className='auth-msg ok';msg.textContent='✓ Cuenta creada. Cargando datos…';
-    usuarioActual={email:r.email,nombre:r.nombre};
-    localStorage.setItem('ps_sesion',JSON.stringify(usuarioActual));
-    mostrarApp();
-    await conectarAPI();
-  }else{
-    msg.className='auth-msg err';msg.textContent='✗ '+((r&&r.mensaje)||'Error al registrar');
-  }
-}
-
-function cerrarSesion(){
-  if(!confirm('¿Cerrar sesión?'))return;
-  localStorage.removeItem('ps_sesion');
-  usuarioActual=null;
-  document.getElementById('userBox').style.display='none';
-  document.getElementById('btnReload').style.display='none';
-  document.getElementById('authOvl').classList.remove('hidden');
-  // Limpiar campos
-  ['loginEmail','loginPwd','regNombre','regEmail','regPwd','regPwd2'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
-  switchAuth('login');
-}
-
-// ═══════════════════════════════════════════════════════════════
-// EDITAR PERSONA
-// ═══════════════════════════════════════════════════════════════
-let personaEdit=null;
-
-function abrirEdit(doc){
-  const p=personas.find(x=>x.documento===doc);
-  if(!p)return;
-  personaEdit=p;
-  document.getElementById('eDoc').value=p.documento;
-  document.getElementById('eNombre').value=p.apellidosNombres;
-  document.getElementById('eCargo').value=p.cargo;
-  document.getElementById('eArea').value=p.area;
-  document.getElementById('eDia').value=p.dia;
-  document.getElementById('eMes').value=p.mes;
-  document.getElementById('eAno').value=p.año;
-  document.getElementById('eFotoUrl').value='';
-  document.getElementById('editMsg').className='msg';
-  document.getElementById('modalEdit').classList.remove('hidden');
-}
-function cerrarEdit(){
-  document.getElementById('modalEdit').classList.add('hidden');
-  personaEdit=null;
-}
-async function guardarEdicion(){
-  if(!personaEdit)return;
-  const msg=document.getElementById('editMsg');msg.className='msg';
-  const btn=document.getElementById('btnGuardarEdit');
-  const v=id=>document.getElementById(id).value.trim();
-  const nombre=v('eNombre'),cargo=v('eCargo'),area=v('eArea'),dia=v('eDia'),mes=v('eMes'),ano=v('eAno'),fotoUrl=v('eFotoUrl');
-  if(!nombre||!cargo||!area||!dia||!mes||!ano){msg.className='msg err';msg.textContent='Completa todos los campos obligatorios.';return;}
-  btn.disabled=true;btn.textContent='Guardando…';
-  const r=await callGET({
-    action:'editarPersona',
-    documento:personaEdit.documento,
-    apellidosNombres:nombre, cargo, area,
-    dia:+dia, mes:+mes, año:+ano,
-    fotoUrl:fotoUrl  // si vacío, GAS conserva la existente
-  });
-  btn.disabled=false;btn.textContent='Guardar cambios';
-  if(r&&r.success){
-    msg.className='msg ok';msg.textContent='✓ '+r.mensaje;
-    setTimeout(async()=>{cerrarEdit();await conectarAPI();},700);
-  }else{
-    msg.className='msg err';msg.textContent='✗ '+((r&&r.mensaje)||'Error al guardar');
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ELIMINAR PERSONA
-// ═══════════════════════════════════════════════════════════════
-let personaDel=null;
-function abrirDel(doc){
-  const p=personas.find(x=>x.documento===doc);
-  if(!p)return;
-  personaDel=p;
-  document.getElementById('delNombre').textContent=p.apellidosNombres;
-  document.getElementById('delDoc').textContent=p.documento;
-  document.getElementById('delMsg').className='msg';
-  document.getElementById('modalDel').classList.remove('hidden');
-}
-function cerrarDel(){
-  document.getElementById('modalDel').classList.add('hidden');
-  personaDel=null;
-}
-async function confirmarEliminar(){
-  if(!personaDel)return;
-  const msg=document.getElementById('delMsg');msg.className='msg';
-  const btn=document.getElementById('btnConfirmDel');
-  btn.disabled=true;btn.textContent='Eliminando…';
-  const r=await callGET({action:'eliminarPersona',documento:personaDel.documento});
-  btn.disabled=false;btn.textContent='Sí, eliminar';
-  if(r&&r.success){
-    msg.className='msg ok';msg.textContent='✓ '+r.mensaje;
-    setTimeout(async()=>{cerrarDel();await conectarAPI();},700);
-  }else{
-    msg.className='msg err';msg.textContent='✗ '+((r&&r.mensaje)||'Error al eliminar');
-  }
-}
 </script>
 </body>
 </html>
