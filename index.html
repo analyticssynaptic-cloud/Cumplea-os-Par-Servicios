@@ -340,7 +340,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 .m4 .bc-phrase{opacity:.92;padding:13px 17px;background:rgba(255,255,255,.07);border-radius:13px;border:1px solid rgba(111,211,232,.35)}
 .m4 .bc-foot{background:rgba(111,211,232,.1);opacity:.65}
 
-/* ── M5 Vino ── */
+/* ── M5 Atardecer ── */
 .m5{background:radial-gradient(120% 80% at 50% 0%,#7E2840 0%,#260C16 72%)}
 .m5 .bc-head{display:flex;align-items:center;gap:16px}
 .m5 .bc-av,.m5 .bc-av-ph{border:3px solid #D88B5C;box-shadow:0 0 24px rgba(216,139,92,.5);background:rgba(216,139,92,.18)}
@@ -428,9 +428,125 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 .empty-msg{text-align:center;padding:32px 20px;color:var(--ink3);font-size:.84rem}
 
 @media(max-width:960px){.wrap{grid-template-columns:1fr}.col-l{border-right:none;border-bottom:1px solid var(--border)}.plist{max-height:300px}}
+
+/* ════════ AUTH (LOGIN / REGISTRO) ════════ */
+.auth-screen{position:fixed;inset:0;background:linear-gradient(135deg,#F8F6F2 0%,#F0EDE7 100%);z-index:1000;
+  display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.auth-screen.hidden{display:none}
+.auth-card{background:var(--surface);border-radius:24px;box-shadow:var(--sh-lg);width:100%;max-width:440px;
+  padding:36px 32px;border:1px solid var(--border)}
+.auth-logo-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:24px;gap:10px}
+.auth-logo-ico{width:60px;height:60px;background:linear-gradient(135deg,var(--gold),var(--gold-d));border-radius:18px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(196,154,69,.45)}
+.auth-logo-ico svg{width:32px;height:32px;fill:#fff}
+.auth-logo-name{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;letter-spacing:-.02em;text-align:center}
+.auth-logo-tag{font-size:.7rem;color:var(--ink2);text-transform:uppercase;letter-spacing:.12em;text-align:center}
+.auth-tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin-bottom:22px}
+.auth-tab{flex:1;padding:10px 8px;font-size:.84rem;font-weight:600;border-radius:9px;cursor:pointer;border:none;background:none;
+  color:var(--ink2);transition:.2s;font-family:'Outfit'}
+.auth-tab.active{background:var(--surface);color:var(--ink);box-shadow:var(--sh-sm)}
+.auth-form{display:none;flex-direction:column;gap:13px;animation:fadeIn .3s ease}
+.auth-form.on{display:flex}
+.auth-fg{display:flex;flex-direction:column;gap:6px}
+.auth-fg label{font-size:.72rem;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
+.auth-fg input{border:1.5px solid var(--border);border-radius:11px;padding:11px 13px;font-size:.88rem;
+  font-family:'Outfit';background:var(--bg);outline:none;transition:.2s}
+.auth-fg input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(196,154,69,.12)}
+.auth-hint{font-size:.74rem;color:var(--gold-d);background:var(--gold-l);padding:10px 13px;border-radius:10px;
+  border-left:3px solid var(--gold);line-height:1.5}
+.auth-btn{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#fff;border:none;border-radius:12px;
+  padding:13px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Outfit';margin-top:4px;
+  transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.auth-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(196,154,69,.38)}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.auth-msg{padding:10px 14px;border-radius:10px;font-size:.82rem;display:none;line-height:1.5}
+.auth-msg.show{display:block}
+.auth-msg.err{background:#FDECEC;color:#B82020}
+.auth-msg.ok{background:#EBF7EF;color:#1E7A42}
+.auth-api{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);font-size:.7rem;color:var(--ink2);
+  display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap}
+.auth-api .dot{width:8px;height:8px;border-radius:50%;background:var(--ink3)}
+.auth-api .dot.ok{background:#1E7A42}
+.auth-api .dot.err{background:#B82020}
+
+/* ── PILL DEL USUARIO LOGUEADO + BOTÓN SALIR ── */
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--bg2);padding:5px 12px 5px 5px;border-radius:24px;
+  font-size:.76rem;color:var(--ink);font-weight:600;max-width:200px;overflow:hidden;white-space:nowrap}
+.user-avatar-ini{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-d));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:.7rem;font-weight:700;flex-shrink:0}
+.user-pill span{overflow:hidden;text-overflow:ellipsis}
+.btn-logout{background:none;border:1.5px solid var(--border);color:var(--ink2);font-size:.72rem;padding:5px 12px;
+  border-radius:9px;cursor:pointer;font-family:'Outfit';font-weight:600;transition:.2s}
+.btn-logout:hover{background:#FDECEC;color:#B82020;border-color:#FDECEC}
+
+/* ── BOTÓN ELIMINAR EN CADA TARJETA DE PERSONA ── */
+.pcard-del{background:var(--bg2);border:1.5px solid var(--border);width:30px;height:30px;border-radius:9px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;padding:0;margin-left:4px}
+.pcard-del:hover{background:#FDECEC;border-color:#D32F2F;transform:scale(1.08)}
+.pcard-del svg{width:14px;height:14px;fill:var(--ink2);transition:.2s}
+.pcard-del:hover svg{fill:#B82020}
+
+/* ── MODAL DE CONFIRMACIÓN ── */
+.modal-confirm{max-width:420px}
+.confirm-icon{width:64px;height:64px;border-radius:50%;background:#FDECEC;display:flex;align-items:center;
+  justify-content:center;margin:8px auto 16px;font-size:1.8rem}
+.confirm-text{text-align:center;font-size:.98rem;color:var(--ink);line-height:1.5;margin-bottom:8px;font-weight:600}
+.confirm-sub{text-align:center;font-size:.8rem;color:var(--ink2);margin-bottom:8px;line-height:1.5}
+.btn-danger{background:linear-gradient(135deg,#D32F2F,#9A2020);color:#fff;border:none;border-radius:10px;
+  padding:10px 22px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'Outfit'}
+.btn-danger:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(211,47,47,.38)}
 </style>
 </head>
 <body>
+
+<!-- ════════ PANTALLA DE LOGIN / REGISTRO ════════ -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo-wrap">
+      <div class="auth-logo-ico"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+      <div><div class="auth-logo-name">Par Servicios</div><div class="auth-logo-tag">Tarjetas de Cumpleaños</div></div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="authTabLogin" onclick="authTab('login')">Ingresar</button>
+      <button class="auth-tab" id="authTabReg" onclick="authTab('reg')">Registrarse</button>
+    </div>
+
+    <form class="auth-form on" id="authFormLogin" onsubmit="event.preventDefault();doLogin()" autocomplete="on">
+      <div class="auth-fg"><label>Correo</label>
+        <input type="email" id="loginEmail" autocomplete="email" placeholder="tu.nombre@parservicios.com" required/></div>
+      <div class="auth-fg"><label>Contraseña</label>
+        <input type="password" id="loginPwd" autocomplete="current-password" placeholder="••••••••" required/></div>
+      <div class="auth-msg" id="loginMsg"></div>
+      <button type="submit" class="auth-btn" id="btnLogin">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5zM20 19h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8z"/></svg>
+        Ingresar
+      </button>
+    </form>
+
+    <form class="auth-form" id="authFormReg" onsubmit="event.preventDefault();doRegister()" autocomplete="on">
+      <div class="auth-hint">Solo correos terminados en <b>@parservicios.com</b> pueden registrarse.</div>
+      <div class="auth-fg"><label>Nombre completo</label>
+        <input type="text" id="regNombre" autocomplete="name" placeholder="Eider Bravo" required/></div>
+      <div class="auth-fg"><label>Correo</label>
+        <input type="email" id="regEmail" autocomplete="email" placeholder="tu.nombre@parservicios.com" required/></div>
+      <div class="auth-fg"><label>Contraseña</label>
+        <input type="password" id="regPwd" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required/></div>
+      <div class="auth-fg"><label>Confirmar contraseña</label>
+        <input type="password" id="regPwd2" autocomplete="new-password" placeholder="Repite la contraseña" required/></div>
+      <div class="auth-msg" id="regMsg"></div>
+      <button type="submit" class="auth-btn" id="btnRegister">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Registrarse
+      </button>
+    </form>
+
+    <div class="auth-api" id="authApi">
+      <span class="dot" id="authApiDot"></span>
+      <span id="authApiTxt">Conectando al servidor…</span>
+    </div>
+  </div>
+</div>
 
 <header class="hdr">
   <div class="logo">
@@ -438,6 +554,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
     <div><div class="logo-name">Par Servicios</div><div class="logo-tag">Tarjetas de Cumpleaños</div></div>
   </div>
   <div class="hdr-right">
+    <div id="userArea" style="display:flex;align-items:center;gap:8px"></div>
     <span class="status idle" id="apiStatus">Sin conectar</span>
     <button class="gear" onclick="toggleApiConfig()" title="Configurar conexión">
       <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -492,7 +609,6 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
           <div class="fg"><label>Nº Documento *</label><input type="text" id="rDoc" placeholder="1073168876"/></div>
           <div class="fg"><label>Cargo *</label><input type="text" id="rCargo" placeholder="Analista BPO"/></div>
           <div class="fg full"><label>Apellidos y Nombres *</label><input type="text" id="rNombre" placeholder="BRAVO HERNANDEZ EIDER YESID"/></div>
-          <div class="fg"><label>Área *</label><input type="text" id="rArea" placeholder="BPO"/></div>
           <div class="fg"><label>Día *</label><input type="number" id="rDia" min="1" max="31" placeholder="2"/></div>
           <div class="fg"><label>Mes *</label>
             <select id="rMes"><option value="">-- Mes --</option>
@@ -502,7 +618,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
               <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option></select>
           </div>
           <div class="fg"><label>Año Nacimiento *</label><input type="number" id="rAno" min="1950" max="2010" placeholder="1995"/></div>
-          <div class="fg"><label>Género *</label>
+          <div class="fg full"><label>Género *</label>
             <select id="rGenero"><option value="">Auto-detectar</option><option value="M">Hombre</option><option value="F">Mujer</option></select></div>
         </div>
         <div id="regMsg" class="msg"></div>
@@ -610,8 +726,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 
       <div class="form-grid">
         <div class="fg full"><label>Apellidos y Nombres *</label><input type="text" id="eNombre" placeholder="BRAVO HERNANDEZ EIDER YESID"/></div>
-        <div class="fg"><label>Cargo *</label><input type="text" id="eCargo" placeholder="Analista BPO"/></div>
-        <div class="fg"><label>Área *</label><input type="text" id="eArea" placeholder="BPO"/></div>
+        <div class="fg full"><label>Cargo *</label><input type="text" id="eCargo" placeholder="Analista BPO"/></div>
         <div class="fg"><label>Día *</label><input type="number" id="eDia" min="1" max="31"/></div>
         <div class="fg"><label>Mes *</label>
           <select id="eMes">
@@ -623,7 +738,7 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
           </select>
         </div>
         <div class="fg"><label>Año Nacimiento *</label><input type="number" id="eAno" min="1950" max="2010"/></div>
-        <div class="fg"><label>Género *</label>
+        <div class="fg full"><label>Género *</label>
           <select id="eGenero">
             <option value="">Auto-detectar</option>
             <option value="M">Hombre</option>
@@ -643,8 +758,22 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
   </div>
 </div>
 
+<!-- ════════ MODAL CONFIRMACIÓN (eliminar, etc.) ════════ -->
+<div class="overlay" id="confirmModal">
+  <div class="modal modal-confirm">
+    <div class="modal-bd" style="padding:24px">
+      <div class="confirm-icon" id="confirmIcon">⚠️</div>
+      <div class="confirm-text" id="confirmText">¿Estás seguro?</div>
+      <div class="confirm-sub" id="confirmSub"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-sc" id="confirmCancelBtn" onclick="cerrarConfirm()">Cancelar</button>
+      <button class="btn-danger" id="confirmAction">Eliminar</button>
+    </div>
+  </div>
+</div>
+
 <script>
-/* ===== gif.js 0.2.0 EMBEBIDO (sin CDN, sin CORS) ===== */
 // gif.js 0.2.0 - https://github.com/jnordberg/gif.js
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.GIF=f()}})(function(){var define,module,exports;return function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}({1:[function(require,module,exports){function EventEmitter(){this._events=this._events||{};this._maxListeners=this._maxListeners||undefined}module.exports=EventEmitter;EventEmitter.EventEmitter=EventEmitter;EventEmitter.prototype._events=undefined;EventEmitter.prototype._maxListeners=undefined;EventEmitter.defaultMaxListeners=10;EventEmitter.prototype.setMaxListeners=function(n){if(!isNumber(n)||n<0||isNaN(n))throw TypeError("n must be a positive number");this._maxListeners=n;return this};EventEmitter.prototype.emit=function(type){var er,handler,len,args,i,listeners;if(!this._events)this._events={};if(type==="error"){if(!this._events.error||isObject(this._events.error)&&!this._events.error.length){er=arguments[1];if(er instanceof Error){throw er}else{var err=new Error('Uncaught, unspecified "error" event. ('+er+")");err.context=er;throw err}}}handler=this._events[type];if(isUndefined(handler))return false;if(isFunction(handler)){switch(arguments.length){case 1:handler.call(this);break;case 2:handler.call(this,arguments[1]);break;case 3:handler.call(this,arguments[1],arguments[2]);break;default:args=Array.prototype.slice.call(arguments,1);handler.apply(this,args)}}else if(isObject(handler)){args=Array.prototype.slice.call(arguments,1);listeners=handler.slice();len=listeners.length;for(i=0;i<len;i++)listeners[i].apply(this,args)}return true};EventEmitter.prototype.addListener=function(type,listener){var m;if(!isFunction(listener))throw TypeError("listener must be a function");if(!this._events)this._events={};if(this._events.newListener)this.emit("newListener",type,isFunction(listener.listener)?listener.listener:listener);if(!this._events[type])this._events[type]=listener;else if(isObject(this._events[type]))this._events[type].push(listener);else this._events[type]=[this._events[type],listener];if(isObject(this._events[type])&&!this._events[type].warned){if(!isUndefined(this._maxListeners)){m=this._maxListeners}else{m=EventEmitter.defaultMaxListeners}if(m&&m>0&&this._events[type].length>m){this._events[type].warned=true;console.error("(node) warning: possible EventEmitter memory "+"leak detected. %d listeners added. "+"Use emitter.setMaxListeners() to increase limit.",this._events[type].length);if(typeof console.trace==="function"){console.trace()}}}return this};EventEmitter.prototype.on=EventEmitter.prototype.addListener;EventEmitter.prototype.once=function(type,listener){if(!isFunction(listener))throw TypeError("listener must be a function");var fired=false;function g(){this.removeListener(type,g);if(!fired){fired=true;listener.apply(this,arguments)}}g.listener=listener;this.on(type,g);return this};EventEmitter.prototype.removeListener=function(type,listener){var list,position,length,i;if(!isFunction(listener))throw TypeError("listener must be a function");if(!this._events||!this._events[type])return this;list=this._events[type];length=list.length;position=-1;if(list===listener||isFunction(list.listener)&&list.listener===listener){delete this._events[type];if(this._events.removeListener)this.emit("removeListener",type,listener)}else if(isObject(list)){for(i=length;i-- >0;){if(list[i]===listener||list[i].listener&&list[i].listener===listener){position=i;break}}if(position<0)return this;if(list.length===1){list.length=0;delete this._events[type]}else{list.splice(position,1)}if(this._events.removeListener)this.emit("removeListener",type,listener)}return this};EventEmitter.prototype.removeAllListeners=function(type){var key,listeners;if(!this._events)return this;if(!this._events.removeListener){if(arguments.length===0)this._events={};else if(this._events[type])delete this._events[type];return this}if(arguments.length===0){for(key in this._events){if(key==="removeListener")continue;this.removeAllListeners(key)}this.removeAllListeners("removeListener");this._events={};return this}listeners=this._events[type];if(isFunction(listeners)){this.removeListener(type,listeners)}else if(listeners){while(listeners.length)this.removeListener(type,listeners[listeners.length-1])}delete this._events[type];return this};EventEmitter.prototype.listeners=function(type){var ret;if(!this._events||!this._events[type])ret=[];else if(isFunction(this._events[type]))ret=[this._events[type]];else ret=this._events[type].slice();return ret};EventEmitter.prototype.listenerCount=function(type){if(this._events){var evlistener=this._events[type];if(isFunction(evlistener))return 1;else if(evlistener)return evlistener.length}return 0};EventEmitter.listenerCount=function(emitter,type){return emitter.listenerCount(type)};function isFunction(arg){return typeof arg==="function"}function isNumber(arg){return typeof arg==="number"}function isObject(arg){return typeof arg==="object"&&arg!==null}function isUndefined(arg){return arg===void 0}},{}],2:[function(require,module,exports){var UA,browser,mode,platform,ua;ua=navigator.userAgent.toLowerCase();platform=navigator.platform.toLowerCase();UA=ua.match(/(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/)||[null,"unknown",0];mode=UA[1]==="ie"&&document.documentMode;browser={name:UA[1]==="version"?UA[3]:UA[1],version:mode||parseFloat(UA[1]==="opera"&&UA[4]?UA[4]:UA[2]),platform:{name:ua.match(/ip(?:ad|od|hone)/)?"ios":(ua.match(/(?:webos|android)/)||platform.match(/mac|win|linux/)||["other"])[0]}};browser[browser.name]=true;browser[browser.name+parseInt(browser.version,10)]=true;browser.platform[browser.platform.name]=true;module.exports=browser},{}],3:[function(require,module,exports){var EventEmitter,GIF,browser,extend=function(child,parent){for(var key in parent){if(hasProp.call(parent,key))child[key]=parent[key]}function ctor(){this.constructor=child}ctor.prototype=parent.prototype;child.prototype=new ctor;child.__super__=parent.prototype;return child},hasProp={}.hasOwnProperty,indexOf=[].indexOf||function(item){for(var i=0,l=this.length;i<l;i++){if(i in this&&this[i]===item)return i}return-1},slice=[].slice;EventEmitter=require("events").EventEmitter;browser=require("./browser.coffee");GIF=function(superClass){var defaults,frameDefaults;extend(GIF,superClass);defaults={workerScript:"gif.worker.js",workers:2,repeat:0,background:"#fff",quality:10,width:null,height:null,transparent:null,debug:false,dither:false};frameDefaults={delay:500,copy:false};function GIF(options){var base,key,value;this.running=false;this.options={};this.frames=[];this.freeWorkers=[];this.activeWorkers=[];this.setOptions(options);for(key in defaults){value=defaults[key];if((base=this.options)[key]==null){base[key]=value}}}GIF.prototype.setOption=function(key,value){this.options[key]=value;if(this._canvas!=null&&(key==="width"||key==="height")){return this._canvas[key]=value}};GIF.prototype.setOptions=function(options){var key,results,value;results=[];for(key in options){if(!hasProp.call(options,key))continue;value=options[key];results.push(this.setOption(key,value))}return results};GIF.prototype.addFrame=function(image,options){var frame,key;if(options==null){options={}}frame={};frame.transparent=this.options.transparent;for(key in frameDefaults){frame[key]=options[key]||frameDefaults[key]}if(this.options.width==null){this.setOption("width",image.width)}if(this.options.height==null){this.setOption("height",image.height)}if(typeof ImageData!=="undefined"&&ImageData!==null&&image instanceof ImageData){frame.data=image.data}else if(typeof CanvasRenderingContext2D!=="undefined"&&CanvasRenderingContext2D!==null&&image instanceof CanvasRenderingContext2D||typeof WebGLRenderingContext!=="undefined"&&WebGLRenderingContext!==null&&image instanceof WebGLRenderingContext){if(options.copy){frame.data=this.getContextData(image)}else{frame.context=image}}else if(image.childNodes!=null){if(options.copy){frame.data=this.getImageData(image)}else{frame.image=image}}else{throw new Error("Invalid image")}return this.frames.push(frame)};GIF.prototype.render=function(){var i,j,numWorkers,ref;if(this.running){throw new Error("Already running")}if(this.options.width==null||this.options.height==null){throw new Error("Width and height must be set prior to rendering")}this.running=true;this.nextFrame=0;this.finishedFrames=0;this.imageParts=function(){var j,ref,results;results=[];for(i=j=0,ref=this.frames.length;0<=ref?j<ref:j>ref;i=0<=ref?++j:--j){results.push(null)}return results}.call(this);numWorkers=this.spawnWorkers();if(this.options.globalPalette===true){this.renderNextFrame()}else{for(i=j=0,ref=numWorkers;0<=ref?j<ref:j>ref;i=0<=ref?++j:--j){this.renderNextFrame()}}this.emit("start");return this.emit("progress",0)};GIF.prototype.abort=function(){var worker;while(true){worker=this.activeWorkers.shift();if(worker==null){break}this.log("killing active worker");worker.terminate()}this.running=false;return this.emit("abort")};GIF.prototype.spawnWorkers=function(){var j,numWorkers,ref,results;numWorkers=Math.min(this.options.workers,this.frames.length);(function(){results=[];for(var j=ref=this.freeWorkers.length;ref<=numWorkers?j<numWorkers:j>numWorkers;ref<=numWorkers?j++:j--){results.push(j)}return results}).apply(this).forEach(function(_this){return function(i){var worker;_this.log("spawning worker "+i);worker=new Worker(_this.options.workerScript);worker.onmessage=function(event){_this.activeWorkers.splice(_this.activeWorkers.indexOf(worker),1);_this.freeWorkers.push(worker);return _this.frameFinished(event.data)};return _this.freeWorkers.push(worker)}}(this));return numWorkers};GIF.prototype.frameFinished=function(frame){var i,j,ref;this.log("frame "+frame.index+" finished - "+this.activeWorkers.length+" active");this.finishedFrames++;this.emit("progress",this.finishedFrames/this.frames.length);this.imageParts[frame.index]=frame;if(this.options.globalPalette===true){this.options.globalPalette=frame.globalPalette;this.log("global palette analyzed");if(this.frames.length>2){for(i=j=1,ref=this.freeWorkers.length;1<=ref?j<ref:j>ref;i=1<=ref?++j:--j){this.renderNextFrame()}}}if(indexOf.call(this.imageParts,null)>=0){return this.renderNextFrame()}else{return this.finishRendering()}};GIF.prototype.finishRendering=function(){var data,frame,i,image,j,k,l,len,len1,len2,len3,offset,page,ref,ref1,ref2;len=0;ref=this.imageParts;for(j=0,len1=ref.length;j<len1;j++){frame=ref[j];len+=(frame.data.length-1)*frame.pageSize+frame.cursor}len+=frame.pageSize-frame.cursor;this.log("rendering finished - filesize "+Math.round(len/1e3)+"kb");data=new Uint8Array(len);offset=0;ref1=this.imageParts;for(k=0,len2=ref1.length;k<len2;k++){frame=ref1[k];ref2=frame.data;for(i=l=0,len3=ref2.length;l<len3;i=++l){page=ref2[i];data.set(page,offset);if(i===frame.data.length-1){offset+=frame.cursor}else{offset+=frame.pageSize}}}image=new Blob([data],{type:"image/gif"});return this.emit("finished",image,data)};GIF.prototype.renderNextFrame=function(){var frame,task,worker;if(this.freeWorkers.length===0){throw new Error("No free workers")}if(this.nextFrame>=this.frames.length){return}frame=this.frames[this.nextFrame++];worker=this.freeWorkers.shift();task=this.getTask(frame);this.log("starting frame "+(task.index+1)+" of "+this.frames.length);this.activeWorkers.push(worker);return worker.postMessage(task)};GIF.prototype.getContextData=function(ctx){return ctx.getImageData(0,0,this.options.width,this.options.height).data};GIF.prototype.getImageData=function(image){var ctx;if(this._canvas==null){this._canvas=document.createElement("canvas");this._canvas.width=this.options.width;this._canvas.height=this.options.height}ctx=this._canvas.getContext("2d");ctx.setFill=this.options.background;ctx.fillRect(0,0,this.options.width,this.options.height);ctx.drawImage(image,0,0);return this.getContextData(ctx)};GIF.prototype.getTask=function(frame){var index,task;index=this.frames.indexOf(frame);task={index:index,last:index===this.frames.length-1,delay:frame.delay,transparent:frame.transparent,width:this.options.width,height:this.options.height,quality:this.options.quality,dither:this.options.dither,globalPalette:this.options.globalPalette,repeat:this.options.repeat,canTransfer:browser.name==="chrome"};if(frame.data!=null){task.data=frame.data}else if(frame.context!=null){task.data=this.getContextData(frame.context)}else if(frame.image!=null){task.data=this.getImageData(frame.image)}else{throw new Error("Invalid frame")}return task};GIF.prototype.log=function(){var args;args=1<=arguments.length?slice.call(arguments,0):[];if(!this.options.debug){return}return console.log.apply(console,args)};return GIF}(EventEmitter);module.exports=GIF},{"./browser.coffee":2,events:1}]},{},[3])(3)});
 //# sourceMappingURL=gif.js.map
@@ -660,17 +789,18 @@ window.GIF_WORKER_BLOB_URL = URL.createObjectURL(new Blob([`// gif.worker.js 0.2
 const DEFAULT_API='https://script.google.com/macros/s/AKfycbwRD42RytIC8rmDeikxTbqaZYfSYC3-ld-RL895HPOKSmp0gYgBOcQvVSciwlc6hoZDMg/exec';
 // Versión del frontend: si esta marca cambia, forzamos a usar el DEFAULT_API
 // (evita que localStorage tenga un URL viejo de un deployment muerto)
-const FRONT_VERSION='v5.1-edit-2026-06';
+const FRONT_VERSION='v5.2-auth-delete-2026-06';
 let API_URL='', personas=[], personaActual=null, disenoActual='m1';
+let usuarioActual=null;
 let fotoBase64='', fotoUrlSubida='', fotoNombreArchivo='';
 const MESES=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 const DISENOS={
-  m1:{label:'Ejecutivo',thumb:'🎩',grad:'linear-gradient(135deg,#0C1A33,#1B3358)',deco:'🥂 🎂 🥂',gender:'M'},
+  m1:{label:'Ejecutivo',thumb:'🎩',grad:'linear-gradient(135deg,#0C1A33,#1B3358)',deco:'🎩 🎂 🎩',gender:'M'},
   m2:{label:'Bosque',thumb:'🌲',grad:'linear-gradient(135deg,#13352A,#225C47)',deco:'🌿 🎉 🌿',gender:'M'},
   m3:{label:'Carbón',thumb:'⬛',grad:'linear-gradient(135deg,#1E1E24,#33333D)',deco:'🔥 🎂 🔥',gender:'M'},
   m4:{label:'Océano',thumb:'🌊',grad:'linear-gradient(135deg,#08415C,#1A6E8E)',deco:'🌊 🎉 🌊',gender:'M'},
-  m5:{label:'Vino',thumb:'🍷',grad:'linear-gradient(135deg,#3A1220,#6E2238)',deco:'🍷 🎂 🍷',gender:'M'},
+  m5:{label:'Atardecer',thumb:'🌅',grad:'linear-gradient(135deg,#3A1220,#6E2238)',deco:'✨ 🎂 ✨',gender:'M'},
   f1:{label:'Floral',thumb:'🌸',grad:'linear-gradient(135deg,#7B2D8B,#C2185B)',deco:'🌸 ✨ 🌺',gender:'F'},
   f2:{label:'Festivo',thumb:'🎊',grad:'linear-gradient(135deg,#FF6B35,#E91E8C)',deco:'🎉 🎂 🎉',gender:'F'},
   f3:{label:'Lavanda',thumb:'💜',grad:'linear-gradient(135deg,#4A3B6B,#7E6BAD)',deco:'💜 ✨ 💜',gender:'F'},
@@ -713,7 +843,19 @@ window.onload=()=>{
   }
   const saved=localStorage.getItem('ps_api')||DEFAULT_API;
   document.getElementById('apiUrl').value=saved; API_URL=saved;
-  renderDesignGrids(); renderChips('M'); conectarAPI(); setupDrag();
+  renderDesignGrids(); renderChips('M'); setupDrag();
+
+  // Revisar si hay sesión guardada (mientras el tab esté abierto)
+  const userSaved=sessionStorage.getItem('ps_user');
+  if(userSaved){
+    try{
+      usuarioActual=JSON.parse(userSaved);
+      document.getElementById('authScreen').classList.add('hidden');
+      mostrarUsuarioEnHeader();
+    }catch(e){sessionStorage.removeItem('ps_user');}
+  }
+  // Conectar (esto carga personas para tenerlas listas cuando el usuario entre)
+  conectarAPI();
 };
 
 function toggleApiConfig(){document.getElementById('apiCollapse').classList.toggle('open');}
@@ -789,16 +931,20 @@ async function conectarAPI(){
   if(!API_URL)return;
   localStorage.setItem('ps_api',API_URL);
   const s=document.getElementById('apiStatus');s.className='status idle';s.textContent='Conectando…';
+  // Status también en panel de auth
+  const aDot=document.getElementById('authApiDot'), aTxt=document.getElementById('authApiTxt');
+  if(aDot){aDot.className='dot';aTxt.textContent='Conectando al servidor…';}
   const d=await callGET({action:'getPersonas'});
   if(d&&d.success){
     personas=d.datos||[];s.className='status ok';s.textContent=personas.length+' personas';
+    if(aDot){aDot.className='dot ok';aTxt.textContent='Servidor conectado · '+personas.length+' personas';}
     renderPersonList(personas);cargarProximos();
   }else{
     s.className='status err';
     s.textContent='Sin conexión';
-    // Mostrar el error real en consola Y en el listado, para que se pueda diagnosticar
     const errTxt=(d&&d.mensaje)?d.mensaje:'Sin respuesta del servidor';
     console.error('Error conectarAPI:',errTxt);
+    if(aDot){aDot.className='dot err';aTxt.textContent='Sin conexión: '+errTxt.substring(0,80);}
     const personListEl=document.getElementById('personList');
     if(personListEl){
       personListEl.innerHTML='<div class="empty-msg" style="text-align:left;color:#B82020;line-height:1.5;font-size:.78rem">'+
@@ -836,10 +982,13 @@ function renderPersonList(lista){
       <img class="pcard-img${img?'':' hidden'}" src="${img||''}" onerror="this.classList.add('hidden');this.nextElementSibling.classList.remove('hidden')">
       <div class="pcard-ph${img?' hidden':''}">${p.genero==='F'?'👩':'👨'}</div>
       <div class="pcard-info"><div class="pcard-name">${p.apellidosNombres}</div>
-        <div class="pcard-meta">${p.cargo} · ${p.area}</div><div class="pcard-meta">${p.dia} de ${MESES[p.mes]}</div></div>
+        <div class="pcard-meta">${p.cargo}${p.area?" · "+p.area:""}</div><div class="pcard-meta">${p.dia} de ${MESES[p.mes]}</div></div>
       <span class="gbadge ${p.genero==='F'?'gf':'gm'}">${p.genero==='F'?'♀':'♂'}</span>
       <button class="pcard-edit" title="Editar persona" onclick="event.stopPropagation();abrirEditarPersona('${p.documento}')">
         <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      </button>
+      <button class="pcard-del" title="Eliminar persona" onclick="event.stopPropagation();confirmarEliminar('${p.documento}')">
+        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
       </button></div>`;}).join('');
 }
 function filtrarPersonas(){
@@ -923,9 +1072,9 @@ async function registrarPersona(){
   const btn=document.getElementById('btnReg'),msg=document.getElementById('regMsg');msg.className='msg';
   document.getElementById('fotoErr').classList.remove('show');
   const v=id=>document.getElementById(id).value.trim();
-  const doc=v('rDoc'),nombre=v('rNombre'),cargo=v('rCargo'),area=v('rArea'),dia=v('rDia'),mes=v('rMes'),ano=v('rAno'),genero=v('rGenero');
+  const doc=v('rDoc'),nombre=v('rNombre'),cargo=v('rCargo'),dia=v('rDia'),mes=v('rMes'),ano=v('rAno'),genero=v('rGenero');
 
-  if(!doc||!nombre||!cargo||!area||!dia||!mes||!ano){msg.className='msg err';msg.textContent='Completa todos los campos obligatorios.';return;}
+  if(!doc||!nombre||!cargo||!dia||!mes||!ano){msg.className='msg err';msg.textContent='Completa todos los campos obligatorios.';return;}
   if(!fotoBase64){msg.className='msg err';msg.textContent='Selecciona la foto de la persona.';return;}
   if(!API_URL){alert('Conecta primero la API (⚙ arriba).');return;}
 
@@ -950,11 +1099,12 @@ async function registrarPersona(){
 
   // ── PASO 2: Guardar el registro en el Sheet con el link de la foto ──
   btn.innerHTML='<span style="display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></span> Guardando…';
-  const d=await registrarPorGet({documento:doc,apellidosNombres:nombre,dia:+dia,mes:+mes,año:+ano,cargo,area,fotoUrl:fotoUrlSubida,genero});
+  // area se manda vacío — el campo ya no se pide al usuario
+  const d=await registrarPorGet({documento:doc,apellidosNombres:nombre,dia:+dia,mes:+mes,año:+ano,cargo,area:'',fotoUrl:fotoUrlSubida,genero});
 
   if(d&&d.success){
     msg.className='msg ok';msg.textContent='✓ '+d.mensaje;
-    ['rDoc','rNombre','rCargo','rArea','rDia','rAno'].forEach(i=>document.getElementById(i).value='');
+    ['rDoc','rNombre','rCargo','rDia','rAno'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('rMes').value='';document.getElementById('rGenero').value='';
     resetFoto();
     await conectarAPI();switchTab('buscar');
@@ -990,7 +1140,6 @@ function abrirEditarPersona(doc){
   document.getElementById('eDocLabel').textContent=doc;
   document.getElementById('eNombre').value=p.apellidosNombres||'';
   document.getElementById('eCargo').value=p.cargo||'';
-  document.getElementById('eArea').value=p.area||'';
   document.getElementById('eDia').value=p.dia||'';
   document.getElementById('eMes').value=p.mes||'';
   document.getElementById('eAno').value=p.año||'';
@@ -1087,15 +1236,19 @@ async function guardarEdicion(){
   document.getElementById('eFotoErr').classList.remove('show');
 
   const v=id=>document.getElementById(id).value.trim();
-  const nombre=v('eNombre'), cargo=v('eCargo'), area=v('eArea');
+  const nombre=v('eNombre'), cargo=v('eCargo');
   const dia=v('eDia'), mes=v('eMes'), ano=v('eAno'), genero=v('eGenero');
 
-  if(!nombre||!cargo||!area||!dia||!mes||!ano){
+  if(!nombre||!cargo||!dia||!mes||!ano){
     msg.className='msg err';
     msg.textContent='Completa todos los campos obligatorios.';
     return;
   }
   if(!API_URL){alert('Conecta primero la API (⚙ arriba).');return;}
+
+  // Conservar el área existente del Sheet (ya no se edita)
+  const pActual = personas.find(p => p.documento === editDoc);
+  const areaExistente = pActual ? (pActual.area || '') : '';
 
   const SVG_OK='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg> Guardar cambios';
   btn.disabled=true;
@@ -1127,7 +1280,7 @@ async function guardarEdicion(){
     documento:editDoc,
     apellidosNombres:nombre,
     dia:+dia, mes:+mes, año:+ano,
-    cargo, area,
+    cargo, area:areaExistente,
     fotoUrl:fotoFinalUrl,
     genero
   });
@@ -1239,7 +1392,7 @@ function buildCard(p,key,frase){
     :`<div class="bc-av-box"><div class="bc-av-ring"></div><div class="bc-av-ph">${p.genero==='F'?'👩':'👨'}</div></div>`;
   return `<div class="card-wrap"><div class="bc ${key}">
     ${confettiHTML(key)}
-    <div class="bc-head">${avatar}<div><div class="bc-nm">${nombre}</div><div class="bc-rl">${p.cargo} · ${p.area}</div></div></div>
+    <div class="bc-head">${avatar}<div><div class="bc-nm">${nombre}</div><div class="bc-rl">${p.cargo}${p.area?" · "+p.area:""}</div></div></div>
     <div class="bc-body">
       <div class="bc-deco">${d.deco}</div>
       <div class="bc-title">¡Feliz Cumpleaños!</div>
@@ -1309,7 +1462,7 @@ function buildCardCaptura(p,key,frase){
     :`<div class="bc-av-box"><div class="bc-av-ring"></div><div class="bc-av-ph">${p.genero==='F'?'👩':'👨'}</div></div>`;
   return `<div class="card-wrap"><div class="bc ${key}">
     ${confettiHTML(key)}
-    <div class="bc-head">${avatar}<div><div class="bc-nm">${nombre}</div><div class="bc-rl">${p.cargo} · ${p.area}</div></div></div>
+    <div class="bc-head">${avatar}<div><div class="bc-nm">${nombre}</div><div class="bc-rl">${p.cargo}${p.area?" · "+p.area:""}</div></div></div>
     <div class="bc-body">
       <div class="bc-deco">${d.deco}</div>
       <div class="bc-title">¡Feliz Cumpleaños!</div>
@@ -1468,7 +1621,7 @@ body{margin:0;padding:0;background:#f2f0ec;font-family:'Outfit',Arial,sans-serif
     ${foto}
     <div style="font-family:'Fraunces',Georgia,serif;font-size:1.45rem;font-weight:700;color:#fff;margin-bottom:4px">${nombre}</div>
     <div style="display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 14px;border-radius:30px;background:${EC.agePill};color:${EC.title};margin:6px 0 10px">🎂 ${fechaCumpleActual(p)}</div>
-    <div style="font-size:.82rem;color:${EC.role}">${p.cargo} · ${p.area}</div>
+    <div style="font-size:.82rem;color:${EC.role}">${p.cargo}${p.area?" · "+p.area:""}</div>
   </div>
   <div style="background:${EC.pBg};padding:24px 40px;text-align:center;animation:fu 1s ease .4s both">
     <div style="font-size:1.6rem;margin-bottom:10px;display:inline-block;animation:float 2.5s ease-in-out infinite">💬</div>
@@ -1491,11 +1644,11 @@ function emailConfetti(key){
   return h;
 }
 const EMAIL_COLORS={
-  m1:{hBg:'linear-gradient(135deg,#0C1A33,#1B3358)',bBg:'linear-gradient(180deg,#1B3358,#0F2952)',pBg:'rgba(18,42,76,.97)',dBg:'#0A1A2E',fBg:'#070F1C',title:'#F2CE6E',sub:'rgba(255,255,255,.5)',role:'rgba(255,255,255,.6)',border:'#C49A45',avatarBg:'rgba(196,154,69,.2)',agePill:'rgba(196,154,69,.2)',emoji:'🎩',deco:'🥂 🎂 🥂'},
+  m1:{hBg:'linear-gradient(135deg,#0C1A33,#1B3358)',bBg:'linear-gradient(180deg,#1B3358,#0F2952)',pBg:'rgba(18,42,76,.97)',dBg:'#0A1A2E',fBg:'#070F1C',title:'#F2CE6E',sub:'rgba(255,255,255,.5)',role:'rgba(255,255,255,.6)',border:'#C49A45',avatarBg:'rgba(196,154,69,.2)',agePill:'rgba(196,154,69,.2)',emoji:'🎩',deco:'🎩 🎂 🎩'},
   m2:{hBg:'linear-gradient(135deg,#13352A,#225C47)',bBg:'linear-gradient(180deg,#225C47,#13352A)',pBg:'rgba(22,66,48,.97)',dBg:'#0B2C1E',fBg:'#081E15',title:'#A8E6C0',sub:'rgba(255,255,255,.5)',role:'rgba(255,255,255,.6)',border:'#6FCF97',avatarBg:'rgba(111,207,151,.2)',agePill:'rgba(111,207,151,.2)',emoji:'🌲',deco:'🌿 🎉 🌿'},
   m3:{hBg:'linear-gradient(135deg,#1E1E24,#33333D)',bBg:'linear-gradient(180deg,#33333D,#1E1E24)',pBg:'rgba(36,36,44,.97)',dBg:'#151518',fBg:'#0F0F12',title:'#F2B568',sub:'rgba(255,255,255,.5)',role:'rgba(255,255,255,.6)',border:'#E8A04D',avatarBg:'rgba(232,160,77,.2)',agePill:'rgba(232,160,77,.2)',emoji:'⚡',deco:'🔥 🎂 🔥'},
   m4:{hBg:'linear-gradient(135deg,#08415C,#1A6E8E)',bBg:'linear-gradient(180deg,#1A6E8E,#08415C)',pBg:'rgba(12,70,96,.97)',dBg:'#063348',fBg:'#042535',title:'#A8E8F2',sub:'rgba(255,255,255,.5)',role:'rgba(255,255,255,.6)',border:'#6FD3E8',avatarBg:'rgba(111,211,232,.2)',agePill:'rgba(111,211,232,.2)',emoji:'🌊',deco:'🌊 🎉 🌊'},
-  m5:{hBg:'linear-gradient(135deg,#3A1220,#6E2238)',bBg:'linear-gradient(180deg,#6E2238,#3A1220)',pBg:'rgba(68,22,36,.97)',dBg:'#2A0C16',fBg:'#1E0810',title:'#F0B98C',sub:'rgba(255,255,255,.5)',role:'rgba(255,255,255,.6)',border:'#D88B5C',avatarBg:'rgba(216,139,92,.2)',agePill:'rgba(216,139,92,.2)',emoji:'🍷',deco:'🍷 🎂 🍷'},
+  m5:{hBg:'linear-gradient(135deg,#3A1220,#6E2238)',bBg:'linear-gradient(180deg,#6E2238,#3A1220)',pBg:'rgba(68,22,36,.97)',dBg:'#2A0C16',fBg:'#1E0810',title:'#F0B98C',sub:'rgba(255,255,255,.5)',role:'rgba(255,255,255,.6)',border:'#D88B5C',avatarBg:'rgba(216,139,92,.2)',agePill:'rgba(216,139,92,.2)',emoji:'🌅',deco:'✨ 🎂 ✨'},
   f1:{hBg:'linear-gradient(135deg,#7B2D8B,#C2185B)',bBg:'linear-gradient(180deg,#8B1A6A,#A8184A)',pBg:'rgba(105,18,72,.97)',dBg:'#56104C',fBg:'#400C38',title:'#FFD1DC',sub:'rgba(255,255,255,.55)',role:'rgba(255,255,255,.65)',border:'#F4A0C0',avatarBg:'rgba(244,160,192,.2)',agePill:'rgba(244,160,192,.2)',emoji:'🌸',deco:'🌸 ✨ 🌺'},
   f2:{hBg:'linear-gradient(135deg,#FF6B35,#E91E8C)',bBg:'linear-gradient(180deg,#E91E8C,#C2185B)',pBg:'rgba(195,28,115,.97)',dBg:'#AD1457',fBg:'#880E4F',title:'#FFE082',sub:'rgba(255,255,255,.6)',role:'rgba(255,255,255,.7)',border:'#FFE082',avatarBg:'rgba(255,224,130,.2)',agePill:'rgba(255,224,130,.25)',emoji:'🎊',deco:'🎉 🎂 🎉'},
   f3:{hBg:'linear-gradient(135deg,#4A3B6B,#7E6BAD)',bBg:'linear-gradient(180deg,#7E6BAD,#5E4D8B)',pBg:'rgba(75,60,115,.97)',dBg:'#3C2E58',fBg:'#2C2244',title:'#F0E4FF',sub:'rgba(255,255,255,.55)',role:'rgba(255,255,255,.65)',border:'#E0CFF5',avatarBg:'rgba(224,207,245,.2)',agePill:'rgba(224,207,245,.2)',emoji:'🦋',deco:'💜 ✨ 💜'},
@@ -1516,6 +1669,145 @@ async function cargarProximos(){
       <button class="btn-mini" onclick="irATarjeta('${p.documento}')">Crear</button></div>`;}).join('')+'</div>';
 }
 function irATarjeta(doc){switchTab('buscar');seleccionarPersona(doc);document.querySelector('.col-r').scrollIntoView({behavior:'smooth'});}
+
+// ════════ AUTH (Login / Registro) ════════
+function authTab(t){
+  document.getElementById('authTabLogin').classList.toggle('active',t==='login');
+  document.getElementById('authTabReg').classList.toggle('active',t==='reg');
+  document.getElementById('authFormLogin').classList.toggle('on',t==='login');
+  document.getElementById('authFormReg').classList.toggle('on',t==='reg');
+  // limpiar mensajes
+  document.getElementById('loginMsg').className='auth-msg';
+  document.getElementById('regMsg').className='auth-msg';
+}
+
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pwd=document.getElementById('loginPwd').value;
+  const msg=document.getElementById('loginMsg');
+  msg.className='auth-msg';
+  if(!email||!pwd){msg.className='auth-msg err show';msg.textContent='Completa correo y contraseña.';return;}
+  if(!API_URL){msg.className='auth-msg err show';msg.textContent='No hay conexión al servidor. Revisa el ⚙ y la consola (F12).';return;}
+
+  const btn=document.getElementById('btnLogin');const txtOrig=btn.innerHTML;
+  btn.disabled=true;btn.textContent='Ingresando…';
+  const r=await callGET({action:'loginUsuario',email,password:pwd});
+  btn.disabled=false;btn.innerHTML=txtOrig;
+
+  if(r&&r.success){
+    usuarioActual=r.usuario;
+    sessionStorage.setItem('ps_user',JSON.stringify(r.usuario));
+    document.getElementById('loginPwd').value='';
+    document.getElementById('authScreen').classList.add('hidden');
+    mostrarUsuarioEnHeader();
+  }else{
+    msg.className='auth-msg err show';
+    msg.textContent=(r&&r.mensaje)||'No se pudo iniciar sesión.';
+  }
+}
+
+async function doRegister(){
+  const nombre=document.getElementById('regNombre').value.trim();
+  const email=document.getElementById('regEmail').value.trim().toLowerCase();
+  const pwd=document.getElementById('regPwd').value;
+  const pwd2=document.getElementById('regPwd2').value;
+  const msg=document.getElementById('regMsg');
+  msg.className='auth-msg';
+
+  if(!nombre||!email||!pwd||!pwd2){msg.className='auth-msg err show';msg.textContent='Completa todos los campos.';return;}
+  if(!email.endsWith('@parservicios.com')){msg.className='auth-msg err show';msg.textContent='Solo se permiten correos @parservicios.com';return;}
+  if(pwd.length<6){msg.className='auth-msg err show';msg.textContent='La contraseña debe tener al menos 6 caracteres.';return;}
+  if(pwd!==pwd2){msg.className='auth-msg err show';msg.textContent='Las contraseñas no coinciden.';return;}
+  if(!API_URL){msg.className='auth-msg err show';msg.textContent='No hay conexión al servidor.';return;}
+
+  const btn=document.getElementById('btnRegister');const txtOrig=btn.innerHTML;
+  btn.disabled=true;btn.textContent='Registrando…';
+  const r=await callGET({action:'registrarUsuario',nombre,email,password:pwd});
+  btn.disabled=false;btn.innerHTML=txtOrig;
+
+  if(r&&r.success){
+    msg.className='auth-msg ok show';
+    msg.textContent='✓ Cuenta creada. Ya puedes ingresar.';
+    setTimeout(()=>{
+      authTab('login');
+      document.getElementById('loginEmail').value=email;
+      document.getElementById('loginPwd').focus();
+      document.getElementById('regPwd').value='';
+      document.getElementById('regPwd2').value='';
+    },900);
+  }else{
+    msg.className='auth-msg err show';
+    msg.textContent=(r&&r.mensaje)||'No se pudo registrar.';
+  }
+}
+
+function mostrarUsuarioEnHeader(){
+  if(!usuarioActual)return;
+  const userArea=document.getElementById('userArea');
+  if(!userArea)return;
+  const nombre=usuarioActual.nombre||usuarioActual.email;
+  const ini=String(nombre).trim().charAt(0).toUpperCase()||'?';
+  userArea.innerHTML=
+    '<div class="user-pill"><div class="user-avatar-ini">'+ini+'</div><span title="'+
+    String(usuarioActual.email||'').replace(/"/g,'&quot;')+'">'+
+    String(nombre).replace(/</g,'&lt;')+'</span></div>'+
+    '<button class="btn-logout" onclick="doLogout()">Salir</button>';
+}
+
+function doLogout(){
+  sessionStorage.removeItem('ps_user');
+  usuarioActual=null;
+  document.getElementById('userArea').innerHTML='';
+  document.getElementById('loginPwd').value='';
+  document.getElementById('loginMsg').className='auth-msg';
+  document.getElementById('authScreen').classList.remove('hidden');
+  authTab('login');
+}
+
+// ════════ ELIMINAR PERSONA ════════
+function abrirConfirm(text, sub, callback, btnText){
+  document.getElementById('confirmText').textContent=text;
+  document.getElementById('confirmSub').textContent=sub||'';
+  const btn=document.getElementById('confirmAction');
+  btn.textContent=btnText||'Eliminar';
+  btn.onclick=()=>{ cerrarConfirm(); if(callback) callback(); };
+  document.getElementById('confirmModal').classList.add('open');
+}
+function cerrarConfirm(){
+  document.getElementById('confirmModal').classList.remove('open');
+}
+
+function confirmarEliminar(doc){
+  const p=personas.find(x=>x.documento===doc);
+  if(!p)return;
+  const nombre=fmtNombre(p.apellidosNombres);
+  abrirConfirm(
+    '¿Eliminar a '+nombre+'?',
+    'Esta acción no se puede deshacer. El registro se borra del Sheet (la foto en Drive queda como respaldo).',
+    ()=>{ ejecutarEliminar(doc); },
+    'Sí, eliminar'
+  );
+}
+
+async function ejecutarEliminar(doc){
+  if(!API_URL){alert('Sin conexión al servidor.');return;}
+  const r=await callGET({action:'eliminarPersona',documento:doc});
+  if(r&&r.success){
+    // Si era la persona seleccionada actualmente, limpiar el preview
+    if(personaActual&&personaActual.documento===doc){
+      personaActual=null;
+      document.getElementById('btnGen').disabled=true;
+      document.getElementById('actWrap').style.display='none';
+      document.getElementById('previewWrap').innerHTML=
+        '<div class="empty-state">'+
+        '<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16z"/></svg>'+
+        '<p>Selecciona una persona y<br>genera su tarjeta de cumpleaños</p></div>';
+    }
+    await conectarAPI();
+  }else{
+    alert('Error al eliminar: '+((r&&r.mensaje)||''));
+  }
+}
 </script>
 </body>
 </html>
