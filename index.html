@@ -657,7 +657,10 @@ window.GIF_WORKER_BLOB_URL = URL.createObjectURL(new Blob([`// gif.worker.js 0.2
 </script>
 
 <script>
-const DEFAULT_API='https://script.google.com/macros/s/AKfycbzvJ5qBVWLbGdYz5RS8nngeFQjqC57J5ig29kV16aLpQ4Ke1dRqnFDmIErEwEQ8W5T6uA/exec';
+const DEFAULT_API='https://script.google.com/macros/s/AKfycbwRD42RytIC8rmDeikxTbqaZYfSYC3-ld-RL895HPOKSmp0gYgBOcQvVSciwlc6hoZDMg/exec';
+// Versión del frontend: si esta marca cambia, forzamos a usar el DEFAULT_API
+// (evita que localStorage tenga un URL viejo de un deployment muerto)
+const FRONT_VERSION='v5.1-edit-2026-06';
 let API_URL='', personas=[], personaActual=null, disenoActual='m1';
 let fotoBase64='', fotoUrlSubida='', fotoNombreArchivo='';
 const MESES=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -701,6 +704,13 @@ const FRASES_F=[
 ];
 
 window.onload=()=>{
+  // Si esta versión del frontend cambió, descartamos el URL viejo del localStorage
+  // (esto evita seguir pegándole a un deployment muerto)
+  const versionGuardada=localStorage.getItem('ps_front_version');
+  if(versionGuardada!==FRONT_VERSION){
+    localStorage.setItem('ps_api',DEFAULT_API);
+    localStorage.setItem('ps_front_version',FRONT_VERSION);
+  }
   const saved=localStorage.getItem('ps_api')||DEFAULT_API;
   document.getElementById('apiUrl').value=saved; API_URL=saved;
   renderDesignGrids(); renderChips('M'); conectarAPI(); setupDrag();
@@ -713,14 +723,20 @@ function toggleApiConfig(){document.getElementById('apiCollapse').classList.togg
 // Solución: mandamos TODO por GET con los datos en la URL (el redirect conserva la query).
 // Para la foto (base64 grande) usamos POST con body text/plain que GAS sí lee de e.postData.
 async function callGET(params){
-  if(!API_URL)return null;
+  if(!API_URL)return {success:false,mensaje:'API no configurada'};
   try{
     const r=await fetch(API_URL+'?'+new URLSearchParams(params),{method:'GET',redirect:'follow'});
-    return await r.json();
+    const txt=await r.text();
+    try{ return JSON.parse(txt); }
+    catch(jsonErr){
+      // GAS devolvió HTML (típico: login de Google porque "Acceso: Solo yo")
+      const preview=txt.substring(0,150).replace(/\s+/g,' ');
+      return {success:false,mensaje:'GAS devolvió HTML en vez de JSON. Revisa que el deployment tenga "Acceso: Cualquiera". Inicio de la respuesta: '+preview};
+    }
   }catch(e){console.error('GET',e);return {success:false,mensaje:'Error de red: '+e.message};}
 }
 async function callPOST(body){
-  if(!API_URL)return null;
+  if(!API_URL)return {success:false,mensaje:'API no configurada'};
   try{
     // text/plain evita el preflight CORS; GAS lee el JSON desde e.postData.contents
     const r=await fetch(API_URL,{
@@ -729,7 +745,12 @@ async function callPOST(body){
       body:JSON.stringify(body),
       redirect:'follow'
     });
-    return await r.json();
+    const txt=await r.text();
+    try{ return JSON.parse(txt); }
+    catch(jsonErr){
+      const preview=txt.substring(0,150).replace(/\s+/g,' ');
+      return {success:false,mensaje:'GAS devolvió HTML en vez de JSON. Revisa "Acceso: Cualquiera". Inicio: '+preview};
+    }
   }catch(e){console.error('POST',e);return {success:false,mensaje:'Error de red: '+e.message};}
 }
 // Registro de persona por GET (datos cortos, viaja en la URL — el redirect 302 los conserva)
@@ -752,7 +773,12 @@ async function subirFotoFormData(base64, fileName){
     fd.append('fileName',fileName);
     fd.append('mimeType','image/jpeg');
     const r=await fetch(API_URL,{method:'POST',body:fd,redirect:'follow'});
-    return await r.json();
+    const txt=await r.text();
+    try{ return JSON.parse(txt); }
+    catch(jsonErr){
+      const preview=txt.substring(0,150).replace(/\s+/g,' ');
+      return {success:false,mensaje:'GAS devolvió HTML al subir foto. Probable problema de permisos. Inicio: '+preview};
+    }
   }catch(e){
     console.error('uploadFoto',e);
     return {success:false,mensaje:'Error de red al subir: '+e.message};
@@ -767,7 +793,23 @@ async function conectarAPI(){
   if(d&&d.success){
     personas=d.datos||[];s.className='status ok';s.textContent=personas.length+' personas';
     renderPersonList(personas);cargarProximos();
-  }else{s.className='status err';s.textContent='Sin conexión';}
+  }else{
+    s.className='status err';
+    s.textContent='Sin conexión';
+    // Mostrar el error real en consola Y en el listado, para que se pueda diagnosticar
+    const errTxt=(d&&d.mensaje)?d.mensaje:'Sin respuesta del servidor';
+    console.error('Error conectarAPI:',errTxt);
+    const personListEl=document.getElementById('personList');
+    if(personListEl){
+      personListEl.innerHTML='<div class="empty-msg" style="text-align:left;color:#B82020;line-height:1.5;font-size:.78rem">'+
+        '<b>⚠ No se pudo conectar al GAS</b><br><br>'+
+        '<b>Error:</b> '+errTxt+'<br><br>'+
+        '<b>Revisa:</b><br>'+
+        '1. Que el URL en ⚙ (arriba) sea el del último deployment.<br>'+
+        '2. Que el deployment tenga: <i>Ejecutar como: Yo</i> y <i>Acceso: Cualquiera</i>.<br>'+
+        '3. Abre Consola (F12) para más detalle.</div>';
+    }
+  }
 }
 
 function switchTab(t){
