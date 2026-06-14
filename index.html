@@ -89,6 +89,28 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
 .gbadge{font-size:.7rem;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:7px;font-weight:700;flex-shrink:0}
 .gm{background:#E6EEF8;color:var(--navy)}.gf{background:#FAE6EC;color:var(--rose)}
 
+/* ── BOTÓN EDITAR EN CADA TARJETA DE PERSONA ── */
+.pcard-edit{background:var(--bg2);border:1.5px solid var(--border);width:30px;height:30px;border-radius:9px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;padding:0;margin-left:4px}
+.pcard-edit:hover{background:var(--gold-l);border-color:var(--gold);transform:scale(1.08)}
+.pcard-edit svg{width:14px;height:14px;fill:var(--ink2);transition:.2s}
+.pcard-edit:hover svg{fill:var(--gold-d)}
+
+/* ── MODAL EDITAR PERSONA ── */
+.modal-edit{max-width:620px}
+.modal-edit .modal-bd{padding:22px 24px}
+.modal-edit .form-grid{margin-top:4px}
+.modal-edit .foto-zone{margin-bottom:14px}
+.edit-doc-readonly{font-size:.78rem;color:var(--ink2);background:var(--bg2);padding:8px 12px;border-radius:9px;
+  margin-bottom:12px;border:1px dashed var(--border)}
+.edit-doc-readonly b{color:var(--ink);font-weight:700}
+.btn-edit{width:100%;background:linear-gradient(135deg,var(--teal),#1A6A5A);color:#fff;border:none;border-radius:12px;
+  padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Outfit';margin-top:14px;
+  display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-edit:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(42,138,120,.38)}
+.btn-edit:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-edit svg{width:16px;height:16px;fill:currentColor}
+
 /* ZONA FOTO */
 .foto-zone{border:2px dashed var(--border);border-radius:13px;cursor:pointer;transition:.22s;background:var(--surface);
   position:relative;overflow:hidden;margin-bottom:13px;min-height:78px;display:flex;align-items:center}
@@ -554,6 +576,73 @@ body{background:var(--bg);font-family:'Outfit',sans-serif;color:var(--ink);min-h
   </div>
 </div>
 
+<!-- ════════ MODAL EDITAR PERSONA ════════ -->
+<div class="overlay" id="editModal">
+  <div class="modal modal-edit">
+    <div class="modal-hd">
+      <h2>✏️ Editar persona</h2>
+      <button class="modal-x" onclick="cerrarEditarModal()">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="edit-doc-readonly">Documento: <b id="eDocLabel">—</b> <span style="opacity:.6">(no editable)</span></div>
+
+      <!-- FOTO -->
+      <div class="foto-zone" id="eFotoZone">
+        <input type="file" id="eFotoInput" accept="image/*" onchange="onFotoEditSelected(event)"/>
+        <div id="eFzEmpty" class="fz-empty">
+          <div class="fz-ico">📷</div>
+          <div class="fz-txt">
+            <span class="fz-title">Cambiar foto (opcional)</span>
+            <span class="fz-sub">Clic o arrastra · si no eliges una, queda la actual</span>
+          </div>
+        </div>
+        <div id="eFzLoaded" class="fz-loaded hidden">
+          <img id="eFzPrev" class="fz-prev" src="" alt=""/>
+          <div class="fz-info">
+            <div class="fz-name" id="eFzName"></div>
+            <button type="button" class="fz-change" onclick="event.stopPropagation();document.getElementById('eFotoInput').click()">Cambiar</button>
+          </div>
+        </div>
+        <div id="eFzUploading" class="fz-uploading hidden"><div class="upspin"></div><span>Subiendo a Drive…</span></div>
+      </div>
+      <div class="foto-ok" id="eFotoOk"><span>✓</span> Foto nueva subida a Drive</div>
+      <div class="foto-err" id="eFotoErr"><span>⚠</span> <span id="eFotoErrTxt"></span></div>
+
+      <div class="form-grid">
+        <div class="fg full"><label>Apellidos y Nombres *</label><input type="text" id="eNombre" placeholder="BRAVO HERNANDEZ EIDER YESID"/></div>
+        <div class="fg"><label>Cargo *</label><input type="text" id="eCargo" placeholder="Analista BPO"/></div>
+        <div class="fg"><label>Área *</label><input type="text" id="eArea" placeholder="BPO"/></div>
+        <div class="fg"><label>Día *</label><input type="number" id="eDia" min="1" max="31"/></div>
+        <div class="fg"><label>Mes *</label>
+          <select id="eMes">
+            <option value="">-- Mes --</option>
+            <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+            <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+            <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+            <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+          </select>
+        </div>
+        <div class="fg"><label>Año Nacimiento *</label><input type="number" id="eAno" min="1950" max="2010"/></div>
+        <div class="fg"><label>Género *</label>
+          <select id="eGenero">
+            <option value="">Auto-detectar</option>
+            <option value="M">Hombre</option>
+            <option value="F">Mujer</option>
+          </select>
+        </div>
+      </div>
+      <div id="editMsg" class="msg"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-sc" onclick="cerrarEditarModal()">Cancelar</button>
+      <button class="btn-edit" id="btnGuardarEdit" onclick="guardarEdicion()" style="width:auto;margin-top:0;padding:10px 22px">
+        <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ===== gif.js 0.2.0 EMBEBIDO (sin CDN, sin CORS) ===== */
 // gif.js 0.2.0 - https://github.com/jnordberg/gif.js
@@ -568,7 +657,7 @@ window.GIF_WORKER_BLOB_URL = URL.createObjectURL(new Blob([`// gif.worker.js 0.2
 </script>
 
 <script>
-const DEFAULT_API='https://script.google.com/macros/s/AKfycbxPI5RmfnCcYESXA6qOIjMvZ9b9m12BoRMG2OplEY95VDzpiloAqB2oeOiOm9UHwch9yA/exec';
+const DEFAULT_API='https://script.google.com/macros/s/AKfycbzvJ5qBVWLbGdYz5RS8nngeFQjqC57J5ig29kV16aLpQ4Ke1dRqnFDmIErEwEQ8W5T6uA/exec';
 let API_URL='', personas=[], personaActual=null, disenoActual='m1';
 let fotoBase64='', fotoUrlSubida='', fotoNombreArchivo='';
 const MESES=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -706,7 +795,10 @@ function renderPersonList(lista){
       <div class="pcard-ph${img?' hidden':''}">${p.genero==='F'?'👩':'👨'}</div>
       <div class="pcard-info"><div class="pcard-name">${p.apellidosNombres}</div>
         <div class="pcard-meta">${p.cargo} · ${p.area}</div><div class="pcard-meta">${p.dia} de ${MESES[p.mes]}</div></div>
-      <span class="gbadge ${p.genero==='F'?'gf':'gm'}">${p.genero==='F'?'♀':'♂'}</span></div>`;}).join('');
+      <span class="gbadge ${p.genero==='F'?'gf':'gm'}">${p.genero==='F'?'♀':'♂'}</span>
+      <button class="pcard-edit" title="Editar persona" onclick="event.stopPropagation();abrirEditarPersona('${p.documento}')">
+        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      </button></div>`;}).join('');
 }
 function filtrarPersonas(){
   const q=document.getElementById('searchInput').value.toLowerCase();
@@ -838,6 +930,185 @@ function resetFoto(){
   document.getElementById('fotoOk').classList.remove('show');
   document.getElementById('fotoErr').classList.remove('show');
   document.getElementById('fotoInput').value='';
+}
+
+// ════════ EDITAR PERSONA ════════
+// Variables aisladas para que no choquen con las del registro
+let editDoc='', editFotoBase64='', editFotoNombre='', editFotoActual='';
+
+function abrirEditarPersona(doc){
+  const p=personas.find(x=>x.documento===doc);
+  if(!p){alert('Persona no encontrada');return;}
+
+  editDoc=doc;
+  editFotoActual=p.fotoUrl||'';
+  editFotoBase64=''; editFotoNombre='';
+
+  // Llenar el formulario con los datos actuales
+  document.getElementById('eDocLabel').textContent=doc;
+  document.getElementById('eNombre').value=p.apellidosNombres||'';
+  document.getElementById('eCargo').value=p.cargo||'';
+  document.getElementById('eArea').value=p.area||'';
+  document.getElementById('eDia').value=p.dia||'';
+  document.getElementById('eMes').value=p.mes||'';
+  document.getElementById('eAno').value=p.año||'';
+  document.getElementById('eGenero').value=p.genero||'';
+
+  // Mostrar la foto actual en el preview
+  const img=driveImg(p.fotoUrl);
+  if(img){
+    document.getElementById('eFzEmpty').classList.add('hidden');
+    document.getElementById('eFzLoaded').classList.remove('hidden');
+    document.getElementById('eFzPrev').src=img;
+    document.getElementById('eFzName').textContent='Foto actual (clic en Cambiar para reemplazar)';
+    document.getElementById('eFotoZone').classList.add('has-foto');
+  }else{
+    document.getElementById('eFzEmpty').classList.remove('hidden');
+    document.getElementById('eFzLoaded').classList.add('hidden');
+    document.getElementById('eFotoZone').classList.remove('has-foto');
+  }
+
+  // Limpiar mensajes anteriores
+  document.getElementById('eFotoOk').classList.remove('show');
+  document.getElementById('eFotoErr').classList.remove('show');
+  document.getElementById('editMsg').className='msg';
+  document.getElementById('editMsg').textContent='';
+  document.getElementById('eFotoInput').value='';
+
+  // Activar drag&drop en la zona de foto del modal (solo la primera vez)
+  setupDragEdit();
+
+  document.getElementById('editModal').classList.add('open');
+}
+
+function cerrarEditarModal(){
+  document.getElementById('editModal').classList.remove('open');
+}
+
+let editDragSetup=false;
+function setupDragEdit(){
+  if(editDragSetup)return;
+  editDragSetup=true;
+  const z=document.getElementById('eFotoZone');
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag');});
+  z.addEventListener('dragleave',()=>z.classList.remove('drag'));
+  z.addEventListener('drop',e=>{
+    e.preventDefault();z.classList.remove('drag');
+    const f=e.dataTransfer.files[0];
+    if(f&&f.type.startsWith('image/'))procesarFotoEdit(f);
+  });
+}
+
+function onFotoEditSelected(e){
+  const f=e.target.files[0];
+  if(f)procesarFotoEdit(f);
+}
+
+// Igual que procesarFoto pero para el modal de edición
+function procesarFotoEdit(file){
+  editFotoNombre=file.name;
+  document.getElementById('eFotoOk').classList.remove('show');
+  document.getElementById('eFotoErr').classList.remove('show');
+  const reader=new FileReader();
+  reader.onload=async ev=>{
+    const dataUrl=await resizeImg(ev.target.result,700);
+    document.getElementById('eFzEmpty').classList.add('hidden');
+    document.getElementById('eFzLoaded').classList.remove('hidden');
+    document.getElementById('eFzPrev').src=dataUrl;
+    document.getElementById('eFzName').textContent=file.name+' (nueva · pendiente de subir)';
+    document.getElementById('eFotoZone').classList.add('has-foto');
+    editFotoBase64=dataUrl.split(',')[1];
+  };
+  reader.readAsDataURL(file);
+}
+
+function mostrarFotoErrEdit(txt){
+  document.getElementById('eFotoErrTxt').textContent=txt;
+  document.getElementById('eFotoErr').classList.add('show');
+}
+
+// Envía la edición por GET (mismo patrón que registrarPorGet, conserva la URL en el redirect 302)
+async function editarPorGet(d){
+  const params={
+    action:'editarPersona',
+    documento:d.documento, apellidosNombres:d.apellidosNombres,
+    dia:d.dia, mes:d.mes, año:d.año, cargo:d.cargo, area:d.area,
+    fotoUrl:d.fotoUrl||'', genero:d.genero
+  };
+  return await callGET(params);
+}
+
+async function guardarEdicion(){
+  const btn=document.getElementById('btnGuardarEdit');
+  const msg=document.getElementById('editMsg');
+  msg.className='msg';
+  document.getElementById('eFotoErr').classList.remove('show');
+
+  const v=id=>document.getElementById(id).value.trim();
+  const nombre=v('eNombre'), cargo=v('eCargo'), area=v('eArea');
+  const dia=v('eDia'), mes=v('eMes'), ano=v('eAno'), genero=v('eGenero');
+
+  if(!nombre||!cargo||!area||!dia||!mes||!ano){
+    msg.className='msg err';
+    msg.textContent='Completa todos los campos obligatorios.';
+    return;
+  }
+  if(!API_URL){alert('Conecta primero la API (⚙ arriba).');return;}
+
+  const SVG_OK='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg> Guardar cambios';
+  btn.disabled=true;
+
+  // PASO 1: si hay foto nueva, súbela primero. Si no, mantén la URL anterior.
+  let fotoFinalUrl=editFotoActual; // por defecto, la actual
+  if(editFotoBase64){
+    btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></span> Subiendo foto…';
+    document.getElementById('eFzUploading').classList.remove('hidden');
+
+    const nombreArchivo=(editFotoNombre||'foto').replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]/g,'_')+'_'+editDoc+'.jpg';
+    const up=await subirFotoFormData(editFotoBase64,nombreArchivo);
+    document.getElementById('eFzUploading').classList.add('hidden');
+
+    if(!up||!up.success){
+      mostrarFotoErrEdit((up&&up.mensaje)?up.mensaje:'No se pudo subir la foto.');
+      msg.className='msg err';
+      msg.textContent='✗ Error al subir la foto nueva. No se guardaron los cambios.';
+      btn.disabled=false;btn.innerHTML=SVG_OK;return;
+    }
+    fotoFinalUrl=up.fotoUrl;
+    document.getElementById('eFotoOk').classList.add('show');
+  }
+
+  // PASO 2: guardar los cambios
+  btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></span> Guardando…';
+
+  const d=await editarPorGet({
+    documento:editDoc,
+    apellidosNombres:nombre,
+    dia:+dia, mes:+mes, año:+ano,
+    cargo, area,
+    fotoUrl:fotoFinalUrl,
+    genero
+  });
+
+  if(d&&d.success){
+    msg.className='msg ok';
+    msg.textContent='✓ '+d.mensaje;
+    // Recargar la lista de personas y, si la editada estaba seleccionada, refrescar
+    await conectarAPI();
+    if(personaActual&&personaActual.documento===editDoc){
+      personaActual=personas.find(p=>p.documento===editDoc)||personaActual;
+      // Si ya había tarjeta generada, regenerarla con los datos nuevos
+      if(document.getElementById('actWrap').style.display==='flex'){
+        generarTarjeta();
+      }
+    }
+    // Cerrar el modal tras un instante
+    setTimeout(()=>{cerrarEditarModal();},900);
+  }else{
+    msg.className='msg err';
+    msg.textContent='✗ '+((d&&d.mensaje)||'Error al guardar');
+  }
+  btn.disabled=false;btn.innerHTML=SVG_OK;
 }
 
 // ═══ TARJETA ═══
